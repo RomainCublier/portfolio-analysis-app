@@ -102,6 +102,18 @@ html, body,
 
 * { font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif !important; }
 
+/* ── Fix icônes Streamlit (Material Symbols) ────────────────────────────── */
+/* La règle * ci-dessus écrase la police Material Symbols utilisée pour les
+   icônes d'expanders, boutons, etc. On la restaure explicitement. */
+.material-symbols-rounded,
+.material-symbols-outlined,
+.material-icons,
+[data-testid="stExpanderToggleIcon"],
+[data-testid="stExpanderToggleIcon"] * {
+    font-family: 'Material Symbols Rounded', 'Material Icons' !important;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
+}
+
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
     background-color: #0D1320 !important;
