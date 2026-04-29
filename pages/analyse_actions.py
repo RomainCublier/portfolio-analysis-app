@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
 from config.settings import CSS, PLOTLY, C, plotly_layout
+from config.ticker_meta import TICKER_META
 from core.indicators import (
     compute_rsi,
     interpret_rsi,
@@ -64,6 +65,7 @@ def load_stock(ticker: str) -> dict:
     mom_1y  = float((close.iloc[-1] / close.iloc[-252] - 1) * 100) if len(close) >= 252 else np.nan
 
     # Fundamentals via yfinance .info
+    static = TICKER_META.get(ticker.upper(), {})
     try:
         info = yf.Ticker(ticker).info
     except Exception:
@@ -75,8 +77,8 @@ def load_stock(ticker: str) -> dict:
     oper_m   = info.get("operatingMargins")
     debt_eq  = info.get("debtToEquity")
     roe      = info.get("returnOnEquity")
-    sector   = info.get("sector") or "Unknown"
-    name     = info.get("longName") or info.get("shortName") or ticker
+    sector   = info.get("sector") or static.get("sector") or "Unknown"
+    name     = info.get("longName") or info.get("shortName") or static.get("name") or ticker
     currency = info.get("currency") or "USD"
     mktcap   = info.get("marketCap")
 

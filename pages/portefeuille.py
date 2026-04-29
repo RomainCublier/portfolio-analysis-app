@@ -17,6 +17,7 @@ import plotly.express as px
 from datetime import datetime, timedelta
 
 from config.settings import CSS, PLOTLY, C, CHART_COLORS, plotly_layout
+from config.ticker_meta import TICKER_META
 from core.indicators import (
     compute_rsi,
     interpret_rsi,
@@ -57,22 +58,27 @@ def load_portfolio_data(tickers_tuple: tuple) -> dict:
     # Fundamentals per ticker
     meta = {}
     for t in tickers:
+        static = TICKER_META.get(t.upper(), {})
         try:
             info = yf.Ticker(t).info
             meta[t] = {
-                "name":    info.get("longName") or info.get("shortName") or t,
-                "sector":  info.get("sector")  or "Unknown",
-                "country": info.get("country") or "Unknown",
+                "name":    info.get("longName") or info.get("shortName") or static.get("name") or t,
+                "sector":  info.get("sector")  or static.get("sector")  or "Unknown",
+                "country": info.get("country") or static.get("country") or "Unknown",
                 "pe":      info.get("trailingPE") or info.get("forwardPE"),
                 "pb":      info.get("priceToBook"),
                 "roe":     info.get("returnOnEquity"),
                 "beta":    info.get("beta"),
             }
-            if meta[t]["roe"] is not None and meta[t]["roe"] <= 1:
+            if meta[t]["roe"] is not None and abs(meta[t]["roe"]) <= 1.0:
                 meta[t]["roe"] = meta[t]["roe"] * 100
         except Exception:
-            meta[t] = {"name": t, "sector": "Unknown", "country": "Unknown",
-                       "pe": None, "pb": None, "roe": None, "beta": None}
+            meta[t] = {
+                "name": static.get("name", t),
+                "sector": static.get("sector", "Unknown"),
+                "country": static.get("country", "Unknown"),
+                "pe": None, "pb": None, "roe": None, "beta": None,
+            }
 
     return {"prices": prices, "meta": meta}
 
@@ -113,8 +119,8 @@ st.markdown(
 st.markdown("### Mes Positions")
 
 DEFAULT_POSITIONS = pd.DataFrame({
-    "Ticker":  ["AAPL", "MSFT", "NVDA", "JPM", "XOM"],
-    "Montant (€/$)": [5000, 4000, 3000, 2000, 1500],
+    "Ticker":        ["AAPL", "MSFT", "NVDA", "JPM", "XOM", "JNJ", "AMZN", "TLT", "GLD", "VEA"],
+    "Montant (€/$)": [5000,   4000,   3500,   2500,  2000,  2000,  3000,   2500,  2000,  1500],
 })
 
 positions_df = st.data_editor(
@@ -439,6 +445,108 @@ try:
             )
 except Exception:
     st.warning("Calcul de performance indisponible (données insuffisantes).")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 3b — Advanced Risk Metrics (institutional grade)
+# ─────────────────────────────────────────────────────────────────────────────
+
+try:
+    # Download SPY as benchmark
+    end_spy   = datetime.today()
+    start_spy = end_spy - timedelta(days=400)
+    spy_raw   = yf.download("SPY", start=start_spy, end=end_spy,
+                             auto_adjust=True, progress=False)
+    if isinstance(spy_raw.columns, pd.MultiIndex):
+        spy_close = spy_raw["Close"]["SPY"]
+    else:
+        spy_close = spy_raw["Close"]
+
+    spy_rets = spy_close.pct_change().dropna()
+
+    # Align dates
+    common_idx  = port_rets.index.intersection(spy_rets.index)
+    p_aligned   = port_rets.loc[common_idx]
+    b_aligned   = spy_rets.loc[common_idx]
+
+    if len(common_idx) > 30:
+        # Beta & Alpha (OLS)
+        cov_pb  = float(np.cov(p_aligned, b_aligned)[0, 1])
+        var_b   = float(np.var(b_aligned))
+        beta    = cov_pb / var_b if var_b > 0 else 1.0
+        alpha_d = float(p_aligned.mean() - beta * b_aligned.mean())   # daily
+        alpha_a = alpha_d * 252 * 100  # annualised %
+
+        # VaR & CVaR (historical, 95%)
+        var_95  = float(np.percentile(port_rets, 5) * 100)
+        cvar_95 = float(port_rets[port_rets <= np.percentile(port_rets, 5)].mean() * 100)
+
+        # Sortino
+        downside = port_rets[port_rets < 0]
+        down_vol = float(downside.std() * np.sqrt(252) * 100) if len(downside) > 0 else float(port_vol)
+        sortino  = (port_ret / 100 - 0.04) / (down_vol / 100) if down_vol > 0 else 0.0
+
+        # Calmar
+        calmar   = (port_ret / 100) / abs(max_dd / 100) if max_dd != 0 else 0.0
+
+        # Tracking Error
+        active_rets = p_aligned - b_aligned
+        te = float(active_rets.std() * np.sqrt(252) * 100)
+        ir = float(active_rets.mean() * 252 * 100 / te) if te > 0 else 0.0
+
+        st.markdown("---")
+        st.markdown("### Métriques de Risque Avancées")
+
+        adv_kpis = [
+            ("Beta (vs SPY)",    f"{beta:.2f}",       "#8892A0" if 0.8 < beta < 1.2 else C["gold"] if beta < 0.8 else "#EF4444"),
+            ("Alpha annualisé",  f"{alpha_a:+.1f}%",  C["gold"] if alpha_a > 0 else "#EF4444"),
+            ("VaR 95% (1j)",     f"{var_95:.2f}%",    "#EF4444"),
+            ("CVaR 95% (1j)",    f"{cvar_95:.2f}%",   "#EF4444"),
+            ("Sortino",          f"{sortino:.2f}",     C["gold"] if sortino > 1.5 else "#8892A0"),
+            ("Calmar",           f"{calmar:.2f}",      C["gold"] if calmar > 0.5 else "#8892A0"),
+            ("Tracking Error",   f"{te:.1f}%",         "#8892A0"),
+            ("Info. Ratio",      f"{ir:.2f}",          C["gold"] if ir > 0.5 else "#8892A0"),
+        ]
+
+        cols_adv = st.columns(4)
+        for i, (lbl, val, clr) in enumerate(adv_kpis):
+            with cols_adv[i % 4]:
+                st.markdown(
+                    f"<div style='background:rgba(30,37,53,0.6);border-radius:8px;padding:12px;"
+                    f"text-align:center;border-top:2px solid {clr};margin-bottom:8px;'>"
+                    f"<div style='color:#8892A0;font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;'>{lbl}</div>"
+                    f"<div style='color:{clr};font-size:1.2rem;font-weight:700;margin-top:4px;font-family:\"IBM Plex Mono\",monospace;'>{val}</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+        # Rolling 3M Sharpe
+        roll_sharpe = port_rets.rolling(63).apply(
+            lambda x: (x.mean() * 252 - 0.04) / (x.std() * np.sqrt(252))
+            if x.std() > 0 else 0, raw=True
+        ).dropna()
+
+        fig_rs = go.Figure()
+        fig_rs.add_hline(y=1, line_dash="dot", line_color="#4A5568",
+                          annotation_text="Sharpe=1", annotation_font_color="#4A5568")
+        fig_rs.add_hline(y=0, line_dash="dot", line_color="#EF444455")
+        fig_rs.add_trace(go.Scatter(
+            x=roll_sharpe.index, y=roll_sharpe.values,
+            name="Sharpe glissant 3M",
+            line=dict(color=C["gold"], width=2),
+            fill="tozeroy",
+            fillcolor="rgba(59,130,246,0.07)",
+        ))
+        fig_rs.update_layout(**plotly_layout(
+            height=220,
+            title=dict(text="Sharpe Ratio glissant (fenêtre 63 jours, Rf=4%)", font=dict(size=12)),
+            yaxis=dict(zeroline=True),
+            margin=dict(l=0, r=0, t=40, b=0),
+            legend=dict(orientation="h", y=1.08),
+        ))
+        st.plotly_chart(fig_rs, use_container_width=True, config={"displayModeBar": False})
+
+except Exception as e:
+    st.info(f"Métriques avancées indisponibles : {e}")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 4 — Corrélation heatmap
