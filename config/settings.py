@@ -93,6 +93,7 @@ def plotly_layout(**overrides) -> dict:
 CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0&display=block');
 
 /* ── Reset & base ────────────────────────────────────────────────────────── */
 html, body,
@@ -102,15 +103,26 @@ html, body,
 
 * { font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif !important; }
 
-/* ── Fix icônes Streamlit (Material Symbols) ────────────────────────────── */
-/* La règle * ci-dessus écrase la police Material Symbols utilisée pour les
-   icônes d'expanders, boutons, etc. On la restaure explicitement. */
-.material-symbols-rounded,
-.material-symbols-outlined,
-.material-icons,
-[data-testid="stExpanderToggleIcon"],
-[data-testid="stExpanderToggleIcon"] * {
-    font-family: 'Material Symbols Rounded', 'Material Icons' !important;
+/* ── Fix icônes Streamlit (Material Symbols Rounded) ────────────────────── */
+/*
+   Structure DOM Streamlit 1.53 (vérifiée dans le bundle index.DSTThs-t.js) :
+     <summary>                       StyledSummary
+       <span>                        StyledSummaryHeading  (display:flex)
+         <span>                      DynamicIcon           (target: emntfgb2)
+           <span>keyboard_arrow_right</span>  StyledMaterialIcon (target: exvv1vr0)
+         </span>
+         <div> label </div>          StyledSummaryLabelWrapper
+       </span>
+     </summary>
+
+   La règle * { font-family: Inter !important } écrase t.genericFonts.iconFont
+   ("Material Symbols Rounded") injecté par Streamlit sur StyledMaterialIcon.
+   On cible le premier span enfant du summary + son enfant pour restaurer la police.
+*/
+[data-testid="stExpander"] summary > span > span:first-child,
+[data-testid="stExpander"] summary > span > span:first-child > span,
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded' !important;
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
 }
 
