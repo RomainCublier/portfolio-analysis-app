@@ -60,9 +60,9 @@ def load_portfolio_data(tickers_tuple: tuple) -> dict:
         try:
             info = yf.Ticker(t).info
             meta[t] = {
-                "name":    info.get("longName", t),
-                "sector":  info.get("sector",   "Unknown"),
-                "country": info.get("country",  "Unknown"),
+                "name":    info.get("longName") or info.get("shortName") or t,
+                "sector":  info.get("sector")  or "Unknown",
+                "country": info.get("country") or "Unknown",
                 "pe":      info.get("trailingPE") or info.get("forwardPE"),
                 "pb":      info.get("priceToBook"),
                 "roe":     info.get("returnOnEquity"),
@@ -326,7 +326,7 @@ with col_pie2:
     # Sector donut
     sector_weights: dict[str, float] = {}
     for t, w in zip(valid_tickers, w_arr):
-        s = meta[t]["sector"] or "Unknown"
+        s = meta[t]["sector"] if meta[t]["sector"] not in ("Unknown", None, "") else "Non classifié"
         sector_weights[s] = sector_weights.get(s, 0) + float(w)
 
     secs = list(sector_weights.keys())
@@ -354,7 +354,7 @@ with col_pie3:
     # Country / geography
     country_weights: dict[str, float] = {}
     for t, w in zip(valid_tickers, w_arr):
-        c = meta[t]["country"] or "Unknown"
+        c = meta[t]["country"] if meta[t]["country"] not in ("Unknown", None, "") else "Non disponible"
         country_weights[c] = country_weights.get(c, 0) + float(w)
 
     cnts = list(country_weights.keys())
@@ -533,7 +533,7 @@ for t in valid_tickers:
     rows.append({
         "Ticker":       t,
         "Nom":          meta[t]["name"][:22],
-        "Secteur":      meta[t]["sector"][:18] if meta[t]["sector"] else "—",
+        "Secteur":      meta[t]["sector"][:18] if meta[t]["sector"] not in ("Unknown", None, "") else "—",
         "Poids":        f"{weights[t]*100:.1f}%",
         "RSI":          f"{rsi:.1f}" if rsi else "—",
         "Mom. 3M":      f"{mom_3m:+.1f}%" if mom_3m is not None else "—",

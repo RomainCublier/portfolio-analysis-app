@@ -15,6 +15,7 @@ navigation = st.navigation(
         st.Page("pages/portefeuille.py",    title="Mon Portefeuille",    icon="📊"),
         st.Page("pages/analyse_actions.py", title="Analyse d'Actions",   icon="🔍"),
         st.Page("pages/secteurs.py",        title="Carte des Secteurs",  icon="🗺️"),
+        st.Page("pages/methodologie.py",    title="Méthodologie",        icon="📐"),
     ],
     position="sidebar",
 )

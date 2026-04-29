@@ -75,9 +75,9 @@ def load_stock(ticker: str) -> dict:
     oper_m   = info.get("operatingMargins")
     debt_eq  = info.get("debtToEquity")
     roe      = info.get("returnOnEquity")
-    sector   = info.get("sector", "Unknown")
-    name     = info.get("longName", ticker)
-    currency = info.get("currency", "USD")
+    sector   = info.get("sector") or "Unknown"
+    name     = info.get("longName") or info.get("shortName") or ticker
+    currency = info.get("currency") or "USD"
     mktcap   = info.get("marketCap")
 
     # Convert margins from 0-1 to percentage if needed
@@ -347,7 +347,7 @@ for data in stocks:
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <div>
             <span style="font-size:1.4rem;font-weight:700;color:#E2E8F0;">{icon} {data['name']}</span>
-            <span style="color:#8892A0;font-size:0.85rem;margin-left:10px;">{data['ticker']} · {data['sector']}</span>
+            <span style="color:#8892A0;font-size:0.85rem;margin-left:10px;">{data['ticker']} · {data['sector'] if data['sector'] not in ('Unknown', '', None) else '—'}</span>
           </div>
           <div style="text-align:right;">
             <span style="background:{color}22;color:{color};padding:4px 12px;border-radius:20px;
