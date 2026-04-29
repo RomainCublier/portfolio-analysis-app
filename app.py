@@ -1,15 +1,20 @@
 import streamlit as st
+from config.settings import CSS
 
-from config.assumptions import APP_NAME
+st.set_page_config(
+    page_title="QuantDesk — Aide à la Décision",
+    page_icon="◈",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-st.set_page_config(page_title=f"{APP_NAME} — AI Investment App", layout="wide")
+st.markdown(CSS, unsafe_allow_html=True)
 
 navigation = st.navigation(
     [
-        st.Page("pages/portfolio_generator.py", title="Portfolio Generator", icon="🤖"),
-        st.Page("pages/etf_due_diligence.py", title="ETF Due Diligence", icon="🧾"),
-        st.Page("pages/asset_analysis.py", title="Asset Analysis", icon="📈"),
-        st.Page("pages/risk_lab.py", title="Risk Lab", icon="🧮"),
+        st.Page("pages/portefeuille.py",    title="Mon Portefeuille",    icon="📊"),
+        st.Page("pages/analyse_actions.py", title="Analyse d'Actions",   icon="🔍"),
+        st.Page("pages/secteurs.py",        title="Carte des Secteurs",  icon="🗺️"),
     ],
     position="sidebar",
 )
