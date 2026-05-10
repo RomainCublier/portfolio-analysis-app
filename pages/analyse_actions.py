@@ -55,7 +55,7 @@ def load_stock(ticker: str) -> dict:
     # ── Prix historiques (API stable, pas de MultiIndex) ─────────────────────
     try:
         obj  = yf.Ticker(ticker, session=_make_session())
-        hist = obj.history(period="14mo", auto_adjust=True)
+        hist = obj.history(period="2y", auto_adjust=True)
     except Exception:
         return {}
 

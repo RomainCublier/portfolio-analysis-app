@@ -457,7 +457,7 @@ except Exception:
 
 try:
     # Benchmark SPY via Ticker.history() — API stable, pas de MultiIndex
-    _spy_hist  = yf.Ticker("SPY").history(period="14mo", auto_adjust=True)
+    _spy_hist  = yf.Ticker("SPY").history(period="2y", auto_adjust=True)
     spy_close  = _spy_hist["Close"].dropna()
     if spy_close.index.tz is not None:
         spy_close.index = spy_close.index.tz_convert(None)
