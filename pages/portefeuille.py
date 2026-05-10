@@ -41,65 +41,42 @@ RF_ANNUAL = 0.04   # Taux sans risque annuel (Fed Funds approximatif)
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_portfolio_data(tickers_tuple: tuple) -> dict:
     """
-    Télécharge 13 mois de prix + fondamentaux pour chaque ticker.
-    Utilise TICKER_META comme source primaire pour nom/secteur/pays,
-    yfinance .info comme complément pour P/E, P/B, ROE, bêta.
+    Télécharge 13 mois de prix + fondamentaux ticker par ticker via
+    yf.Ticker().history() — API stable, zéro MultiIndex, compatible
+    toutes versions de yfinance.
     """
     tickers = list(tickers_tuple)
-    end     = datetime.today()
-    start   = end - timedelta(days=400)
+    prices_dict = {}
+    meta        = {}
 
-    # ── Prix historiques ──────────────────────────────────────────────────────
-    raw = yf.download(tickers, start=start, end=end,
-                      auto_adjust=True, progress=False)
-    if raw.empty:
-        return {}
-
-    # Extraction robuste des prix de clôture — compatible toutes versions yfinance
-    # yfinance peut retourner un MultiIndex (field, ticker) ou (ticker, field)
-    # selon la version et le nombre de tickers, ou un Index plat pour 1 ticker.
-    if isinstance(raw.columns, pd.MultiIndex):
-        level0 = raw.columns.get_level_values(0).unique().tolist()
-        level1 = raw.columns.get_level_values(1).unique().tolist()
-        if "Close" in level0:
-            # Format standard (field, ticker) — group_by="column"
-            prices = raw["Close"].copy()
-        elif "Close" in level1:
-            # Format (ticker, field) — group_by="ticker"
-            prices = raw.xs("Close", axis=1, level=1).copy()
-        else:
-            return {}
-    else:
-        # Un seul ticker — colonnes plates
-        if "Close" in raw.columns:
-            prices = raw[["Close"]].copy()
-            prices.columns = [tickers[0]]
-        else:
-            return {}
-
-    if isinstance(prices, pd.Series):
-        prices = prices.to_frame(name=tickers[0])
-
-    # Forward-fill pour combler les jours fériés / absences de cotation
-    prices = prices.ffill().bfill()
-    # Conserver uniquement les lignes où au moins 1 ticker a des données
-    prices = prices.dropna(how="all")
-
-    # ── Fondamentaux ──────────────────────────────────────────────────────────
-    meta = {}
     for t in tickers:
         static = TICKER_META.get(t.upper(), {})
+        obj    = yf.Ticker(t)
+
+        # ── Prix de clôture ──────────────────────────────────────────────────
         try:
-            info = yf.Ticker(t).info
-            pe_raw = info.get("trailingPE") or info.get("forwardPE")
+            hist = obj.history(period="14mo", auto_adjust=True)
+            if hist.empty or "Close" not in hist.columns:
+                continue
+            s = hist["Close"].dropna()
+            if len(s) < 30:
+                continue
+            s.index = s.index.tz_localize(None)   # uniformise les index (naive)
+            prices_dict[t] = s
+        except Exception:
+            continue
+
+        # ── Fondamentaux ─────────────────────────────────────────────────────
+        try:
+            info    = obj.info
+            pe_raw  = info.get("trailingPE") or info.get("forwardPE")
             roe_raw = info.get("returnOnEquity")
-            # yfinance retourne ROE en décimal (ex: 0.18 = 18%) → convertir
             if roe_raw is not None and abs(float(roe_raw)) <= 2.0:
                 roe_raw = float(roe_raw) * 100
             meta[t] = {
                 "name":    info.get("longName") or info.get("shortName") or static.get("name", t),
-                "sector":  info.get("sector")   or static.get("sector",  "Unknown"),
-                "country": info.get("country")  or static.get("country", "Unknown"),
+                "sector":  info.get("sector")   or static.get("sector",  "Non classifié"),
+                "country": info.get("country")  or static.get("country", "—"),
                 "pe":      float(pe_raw)  if pe_raw  and np.isfinite(float(pe_raw))  else None,
                 "pb":      float(info.get("priceToBook")) if info.get("priceToBook") else None,
                 "roe":     float(roe_raw) if roe_raw else None,
@@ -108,31 +85,35 @@ def load_portfolio_data(tickers_tuple: tuple) -> dict:
         except Exception:
             meta[t] = {
                 "name":    static.get("name",    t),
-                "sector":  static.get("sector",  "Unknown"),
-                "country": static.get("country", "Unknown"),
+                "sector":  static.get("sector",  "Non classifié"),
+                "country": static.get("country", "—"),
                 "pe": None, "pb": None, "roe": None, "beta": None,
             }
+
+    if not prices_dict:
+        return {}
+
+    # Assembler en DataFrame — réindexer sur l'union des dates, puis ffill
+    prices = pd.DataFrame(prices_dict)
+    prices = prices.ffill().bfill()
+    prices = prices.dropna(how="all")
 
     return {"prices": prices, "meta": meta}
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_benchmark(benchmark: str = "SPY") -> pd.Series:
-    """Charge le benchmark (SPY par défaut) pour calculs Alpha/Beta."""
-    end   = datetime.today()
-    start = end - timedelta(days=400)
-    raw = yf.download(benchmark, start=start, end=end,
-                      auto_adjust=True, progress=False)
-    if raw.empty:
+    """Charge le benchmark (SPY par défaut) pour calculs Alpha/Beta.
+    Utilise Ticker.history() — API stable, zéro MultiIndex."""
+    try:
+        hist = yf.Ticker(benchmark).history(period="14mo", auto_adjust=True)
+        if hist.empty or "Close" not in hist.columns:
+            return pd.Series(dtype=float)
+        s = hist["Close"].dropna()
+        s.index = s.index.tz_localize(None)
+        return s.ffill().dropna()
+    except Exception:
         return pd.Series(dtype=float)
-    if isinstance(raw.columns, pd.MultiIndex):
-        level0 = raw.columns.get_level_values(0).unique().tolist()
-        close = raw["Close"] if "Close" in level0 else raw.xs("Close", axis=1, level=1)
-    else:
-        close = raw["Close"]
-    if isinstance(close, pd.DataFrame):
-        close = close.squeeze()
-    return close.ffill().dropna()
 
 
 def _safe_float(v):
