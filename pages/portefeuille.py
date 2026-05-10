@@ -254,21 +254,26 @@ with col_score:
     )
 
 with col_breakdown:
-    # Sub-scores
+    # Sub-scores — barres = SCORES (100 = bon, 0 = mauvais)
+    # Markowitz : bonne diversification = poids répartis + faible corrélation + multi-secteurs
     sub = diag.get("sub_scores", {})
     sub_items = [
-        ("Concentration (HHI)",          sub.get("hhi_score",      50)),
-        ("Corrélation moyenne",           sub.get("corr_score",     50)),
-        ("Concentration sectorielle",     sub.get("sector_score",   50)),
+        # Label                          Score                         Explication
+        ("Répartition des poids  (HHI)", sub.get("hhi_score",   50), "100 = équipondéré · 0 = mono-position"),
+        ("Décorrélation des actifs",     sub.get("corr_score",  50), "100 = actifs indépendants · 0 = corrélation totale"),
+        ("Diversification sectorielle",  sub.get("sector_score",50), "100 = tous secteurs distincts · 0 = mono-secteur"),
     ]
-    for name, s in sub_items:
+    for label, s, tooltip in sub_items:
         c = color_score(s)
         st.markdown(
-            f"<div style='display:flex;align-items:center;gap:12px;margin-bottom:10px;'>"
-            f"<span style='color:#8892A0;font-size:0.82rem;min-width:220px;'>{name}</span>"
+            f"<div style='margin-bottom:12px;'>"
+            f"<div style='display:flex;align-items:center;gap:12px;'>"
+            f"<span style='color:#8892A0;font-size:0.80rem;min-width:220px;'>{label}</span>"
             f"<div style='flex:1;background:#2D3748;border-radius:4px;height:8px;'>"
             f"<div style='background:{c};width:{s:.0f}%;height:100%;border-radius:4px;'></div></div>"
-            f"<span style='color:{c};font-size:0.82rem;font-weight:600;min-width:30px;'>{s:.0f}</span>"
+            f"<span style='color:{c};font-size:0.82rem;font-weight:600;min-width:32px;text-align:right;'>{s:.0f}</span>"
+            f"</div>"
+            f"<div style='color:#4A5568;font-size:0.68rem;margin-top:2px;padding-left:2px;font-style:italic;'>{tooltip}</div>"
             f"</div>",
             unsafe_allow_html=True,
         )
