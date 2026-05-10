@@ -51,18 +51,31 @@ def load_portfolio_data(tickers_tuple: tuple) -> dict:
 
     # ── Prix historiques ──────────────────────────────────────────────────────
     raw = yf.download(tickers, start=start, end=end,
-                      auto_adjust=True, progress=False, group_by="ticker")
+                      auto_adjust=True, progress=False)
     if raw.empty:
         return {}
 
-    # Normaliser le DataFrame selon le nombre de tickers
+    # Extraction robuste des prix de clôture — compatible toutes versions yfinance
+    # yfinance peut retourner un MultiIndex (field, ticker) ou (ticker, field)
+    # selon la version et le nombre de tickers, ou un Index plat pour 1 ticker.
     if isinstance(raw.columns, pd.MultiIndex):
-        # Multi-tickers : raw["Close"] donne un DataFrame avec tickers en colonnes
-        prices = raw["Close"].copy()
+        level0 = raw.columns.get_level_values(0).unique().tolist()
+        level1 = raw.columns.get_level_values(1).unique().tolist()
+        if "Close" in level0:
+            # Format standard (field, ticker) — group_by="column"
+            prices = raw["Close"].copy()
+        elif "Close" in level1:
+            # Format (ticker, field) — group_by="ticker"
+            prices = raw.xs("Close", axis=1, level=1).copy()
+        else:
+            return {}
     else:
-        # Un seul ticker
-        prices = raw[["Close"]].copy()
-        prices.columns = [tickers[0]]
+        # Un seul ticker — colonnes plates
+        if "Close" in raw.columns:
+            prices = raw[["Close"]].copy()
+            prices.columns = [tickers[0]]
+        else:
+            return {}
 
     if isinstance(prices, pd.Series):
         prices = prices.to_frame(name=tickers[0])
@@ -108,9 +121,15 @@ def load_benchmark(benchmark: str = "SPY") -> pd.Series:
     """Charge le benchmark (SPY par défaut) pour calculs Alpha/Beta."""
     end   = datetime.today()
     start = end - timedelta(days=400)
-    raw   = yf.download(benchmark, start=start, end=end,
-                        auto_adjust=True, progress=False)
-    close = raw["Close"]
+    raw = yf.download(benchmark, start=start, end=end,
+                      auto_adjust=True, progress=False)
+    if raw.empty:
+        return pd.Series(dtype=float)
+    if isinstance(raw.columns, pd.MultiIndex):
+        level0 = raw.columns.get_level_values(0).unique().tolist()
+        close = raw["Close"] if "Close" in level0 else raw.xs("Close", axis=1, level=1)
+    else:
+        close = raw["Close"]
     if isinstance(close, pd.DataFrame):
         close = close.squeeze()
     return close.ffill().dropna()
