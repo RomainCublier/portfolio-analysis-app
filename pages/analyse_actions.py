@@ -12,7 +12,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import yfinance as yf
-import requests
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
@@ -34,38 +33,23 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 # ─── helpers ────────────────────────────────────────────────────────────────
 
-def _make_session() -> requests.Session:
-    """Session HTTP avec User-Agent navigateur pour éviter le blocage Yahoo."""
-    s = requests.Session()
-    s.headers.update({
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/124.0.0.0 Safari/537.36"
-        )
-    })
-    return s
-
-
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_stock(ticker: str) -> dict:
-    """Prix via Ticker.history() + fondamentaux via .info + .fast_info."""
+    """Prix + fondamentaux pour un ticker."""
     static = TICKER_META.get(ticker.upper(), {})
+    obj = yf.Ticker(ticker)
 
-    # ── Prix historiques (API stable, pas de MultiIndex) ─────────────────────
+    # ── Prix historiques ──────────────────────────────────────────────────────
     try:
-        obj  = yf.Ticker(ticker, session=_make_session())
-        hist = obj.history(period="2y", auto_adjust=True)
+        hist = obj.history(period="1y")
+        if hist.empty or "Close" not in hist.columns:
+            return {}
+        close = hist["Close"].dropna()
+        if close.index.tz is not None:
+            close.index = close.index.tz_convert(None)
+        if len(close) < 30:
+            return {}
     except Exception:
-        return {}
-
-    if hist.empty or "Close" not in hist.columns:
-        return {}
-
-    close = hist["Close"].dropna()
-    if close.index.tz is not None:
-        close.index = close.index.tz_convert(None)
-    if len(close) < 30:
         return {}
 
     # ── Indicateurs techniques ────────────────────────────────────────────────
@@ -79,56 +63,41 @@ def load_stock(ticker: str) -> dict:
     mom_6m   = float((close.iloc[-1] / close.iloc[-126] - 1) * 100) if len(close) >= 126 else np.nan
     mom_1y   = float((close.iloc[-1] / close.iloc[-252] - 1) * 100) if len(close) >= 252 else np.nan
 
-    # ── Fondamentaux : .info avec User-Agent, fallback fast_info + static ────
+    # ── Fondamentaux ─────────────────────────────────────────────────────────
     info = {}
     try:
         info = obj.info or {}
     except Exception:
         pass
 
-    # fast_info : toujours disponible, données de marché de base
-    fi = {}
-    try:
-        fi = obj.fast_info or {}
-        # fast_info est un objet — convertir en dict-like accès
-        fi = {k: getattr(fi, k, None) for k in
-              ("market_cap", "currency", "last_price", "shares",
-               "three_month_average_volume", "year_high", "year_low")}
-    except Exception:
-        fi = {}
+    def _f(key, fallback=None):
+        v = info.get(key)
+        if v is None:
+            return fallback
+        try:
+            f = float(v)
+            return f if np.isfinite(f) else fallback
+        except Exception:
+            return fallback
 
-    def _get(*keys, fallback=None):
-        """Cherche les clés dans info puis fast_info."""
-        for k in keys:
-            v = info.get(k)
-            if v is not None:
-                try:
-                    f = float(v)
-                    if np.isfinite(f):
-                        return f
-                except Exception:
-                    return v  # chaîne de caractères (sector, name…)
-        return fallback
+    pe      = _f("trailingPE") or _f("forwardPE")
+    pb      = _f("priceToBook")
+    gross_m = _f("grossMargins")
+    oper_m  = _f("operatingMargins")
+    debt_eq = _f("debtToEquity")
+    roe     = _f("returnOnEquity")
+    mktcap  = _f("marketCap")
+    currency = info.get("currency") or "USD"
+    sector   = info.get("sector")  or static.get("sector")  or "—"
+    name     = info.get("longName") or info.get("shortName") or static.get("name") or ticker
 
-    pe      = _get("trailingPE", "forwardPE")
-    pb      = _get("priceToBook")
-    gross_m = _get("grossMargins")
-    oper_m  = _get("operatingMargins")
-    debt_eq = _get("debtToEquity")
-    roe     = _get("returnOnEquity")
-    mktcap  = _get("marketCap") or fi.get("market_cap")
-    currency = info.get("currency") or fi.get("currency") or "USD"
-    sector  = info.get("sector")   or static.get("sector")  or "—"
-    name    = (info.get("longName") or info.get("shortName")
-               or static.get("name") or ticker)
-
-    # Normaliser les ratios retournés en décimal par yfinance → pourcentage
+    # yfinance retourne marges/ROE en décimal (0.18 = 18 %) → convertir
     if gross_m is not None and abs(gross_m) <= 2.0:
         gross_m = gross_m * 100
-    if oper_m is not None and abs(oper_m) <= 2.0:
-        oper_m  = oper_m * 100
-    if roe is not None and abs(roe) <= 2.0:
-        roe     = roe * 100
+    if oper_m  is not None and abs(oper_m)  <= 2.0:
+        oper_m  = oper_m  * 100
+    if roe     is not None and abs(roe)     <= 2.0:
+        roe     = roe     * 100
 
     return {
         "ticker":   ticker.upper(),
