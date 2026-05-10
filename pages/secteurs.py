@@ -170,7 +170,6 @@ for key, sec in SECTORS.items():
     with st.expander(
         f"{'📌 ' if is_selected else ''}{sec['label']}  —  ETF: {etf}",
         expanded=is_selected,
-        icon="▸",
     ):
 
         col_desc, col_spark = st.columns([3, 2])
