@@ -26,44 +26,42 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_etf_data(etfs: tuple) -> pd.DataFrame:
-    end   = datetime.today()
-    start = end - timedelta(days=400)
-    raw   = yf.download(list(etfs), start=start, end=end,
-                        auto_adjust=True, progress=False)
-    if raw.empty:
+    """Charge les prix de clôture des ETFs sectoriels — un ticker à la fois."""
+    series_dict = {}
+    for etf in etfs:
+        try:
+            hist = yf.Ticker(etf).history(period="14mo", auto_adjust=True)
+            if hist.empty or "Close" not in hist.columns:
+                continue
+            s = hist["Close"].dropna()
+            if s.index.tz is not None:
+                s.index = s.index.tz_convert(None)
+            series_dict[etf] = s
+        except Exception:
+            continue
+    if not series_dict:
         return pd.DataFrame()
-    if isinstance(raw.columns, pd.MultiIndex):
-        return raw["Close"].dropna(how="all")
-    return raw[["Close"]].copy().rename(columns={"Close": etfs[0]})
+    return pd.DataFrame(series_dict).dropna(how="all")
 
 
 @st.cache_data(ttl=1800, show_spinner=False)
-def load_company_prices(tickers: tuple) -> dict[str, float | None]:
-    """Load latest price + 3M change for a list of tickers."""
-    end   = datetime.today()
-    start = end - timedelta(days=100)
-    try:
-        raw = yf.download(list(tickers), start=start, end=end,
-                          auto_adjust=True, progress=False)
-        if raw.empty:
-            return {}
-        if isinstance(raw.columns, pd.MultiIndex):
-            prices = raw["Close"]
-        else:
-            prices = raw
-
-        result = {}
-        for t in tickers:
-            if t in prices.columns:
-                s = prices[t].dropna()
-                if len(s) >= 2:
-                    cur  = float(s.iloc[-1])
-                    old  = float(s.iloc[0])
-                    chg  = (cur / old - 1) * 100
-                    result[t] = {"price": cur, "chg_3m": chg}
-        return result
-    except Exception:
-        return {}
+def load_company_prices(tickers: tuple) -> dict:
+    """Charge prix courant + variation 3M pour chaque ticker."""
+    result = {}
+    for t in tickers:
+        try:
+            hist = yf.Ticker(t).history(period="4mo", auto_adjust=True)
+            if hist.empty or "Close" not in hist.columns:
+                continue
+            s = hist["Close"].dropna()
+            if len(s) < 2:
+                continue
+            cur = float(s.iloc[-1])
+            old = float(s.iloc[0])
+            result[t] = {"price": cur, "chg_3m": (cur / old - 1) * 100}
+        except Exception:
+            continue
+    return result
 
 
 def fmt_pct(v, sign=True):

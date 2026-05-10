@@ -61,7 +61,8 @@ def load_portfolio_data(tickers_tuple: tuple) -> dict:
             s = hist["Close"].dropna()
             if len(s) < 30:
                 continue
-            s.index = s.index.tz_localize(None)   # uniformise les index (naive)
+            if s.index.tz is not None:             # uniformise les index (naive)
+                s.index = s.index.tz_convert(None)
             prices_dict[t] = s
         except Exception:
             continue
@@ -110,7 +111,8 @@ def load_benchmark(benchmark: str = "SPY") -> pd.Series:
         if hist.empty or "Close" not in hist.columns:
             return pd.Series(dtype=float)
         s = hist["Close"].dropna()
-        s.index = s.index.tz_localize(None)
+        if s.index.tz is not None:
+            s.index = s.index.tz_convert(None)
         return s.ffill().dropna()
     except Exception:
         return pd.Series(dtype=float)
