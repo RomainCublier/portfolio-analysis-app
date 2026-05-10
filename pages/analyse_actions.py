@@ -12,6 +12,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import yfinance as yf
+import requests
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
@@ -33,62 +34,101 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 # ─── helpers ────────────────────────────────────────────────────────────────
 
+def _make_session() -> requests.Session:
+    """Session HTTP avec User-Agent navigateur pour éviter le blocage Yahoo."""
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        )
+    })
+    return s
+
+
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_stock(ticker: str) -> dict:
-    """Download price history + fundamentals for one ticker."""
-    end   = datetime.today()
-    start = end - timedelta(days=400)
+    """Prix via Ticker.history() + fondamentaux via .info + .fast_info."""
+    static = TICKER_META.get(ticker.upper(), {})
 
-    hist = yf.download(ticker, start=start, end=end,
-                       auto_adjust=True, progress=False)
-    if hist.empty:
+    # ── Prix historiques (API stable, pas de MultiIndex) ─────────────────────
+    try:
+        obj  = yf.Ticker(ticker, session=_make_session())
+        hist = obj.history(period="14mo", auto_adjust=True)
+    except Exception:
         return {}
 
-    # flatten MultiIndex if needed
-    if isinstance(hist.columns, pd.MultiIndex):
-        hist.columns = hist.columns.get_level_values(0)
+    if hist.empty or "Close" not in hist.columns:
+        return {}
 
     close = hist["Close"].dropna()
+    if close.index.tz is not None:
+        close.index = close.index.tz_convert(None)
     if len(close) < 30:
         return {}
 
-    # Technicals
+    # ── Indicateurs techniques ────────────────────────────────────────────────
     rsi_val  = compute_rsi(close)
-    ma50     = float(close.rolling(50).mean().iloc[-1]) if len(close) >= 50 else np.nan
+    ma50     = float(close.rolling(50).mean().iloc[-1])  if len(close) >= 50  else np.nan
     ma200    = float(close.rolling(200).mean().iloc[-1]) if len(close) >= 200 else np.nan
     price    = float(close.iloc[-1])
     low_52w  = float(close.tail(252).min())
     high_52w = float(close.tail(252).max())
+    mom_3m   = float((close.iloc[-1] / close.iloc[-63]  - 1) * 100) if len(close) >= 63  else np.nan
+    mom_6m   = float((close.iloc[-1] / close.iloc[-126] - 1) * 100) if len(close) >= 126 else np.nan
+    mom_1y   = float((close.iloc[-1] / close.iloc[-252] - 1) * 100) if len(close) >= 252 else np.nan
 
-    mom_3m  = float((close.iloc[-1] / close.iloc[-63] - 1) * 100) if len(close) >= 63 else np.nan
-    mom_6m  = float((close.iloc[-1] / close.iloc[-126] - 1) * 100) if len(close) >= 126 else np.nan
-    mom_1y  = float((close.iloc[-1] / close.iloc[-252] - 1) * 100) if len(close) >= 252 else np.nan
-
-    # Fundamentals via yfinance .info
-    static = TICKER_META.get(ticker.upper(), {})
+    # ── Fondamentaux : .info avec User-Agent, fallback fast_info + static ────
+    info = {}
     try:
-        info = yf.Ticker(ticker).info
+        info = obj.info or {}
     except Exception:
-        info = {}
+        pass
 
-    pe       = info.get("trailingPE")       or info.get("forwardPE")
-    pb       = info.get("priceToBook")
-    gross_m  = info.get("grossMargins")
-    oper_m   = info.get("operatingMargins")
-    debt_eq  = info.get("debtToEquity")
-    roe      = info.get("returnOnEquity")
-    sector   = info.get("sector") or static.get("sector") or "Unknown"
-    name     = info.get("longName") or info.get("shortName") or static.get("name") or ticker
-    currency = info.get("currency") or "USD"
-    mktcap   = info.get("marketCap")
+    # fast_info : toujours disponible, données de marché de base
+    fi = {}
+    try:
+        fi = obj.fast_info or {}
+        # fast_info est un objet — convertir en dict-like accès
+        fi = {k: getattr(fi, k, None) for k in
+              ("market_cap", "currency", "last_price", "shares",
+               "three_month_average_volume", "year_high", "year_low")}
+    except Exception:
+        fi = {}
 
-    # Convert margins from 0-1 to percentage if needed
-    if gross_m is not None and gross_m <= 1:
+    def _get(*keys, fallback=None):
+        """Cherche les clés dans info puis fast_info."""
+        for k in keys:
+            v = info.get(k)
+            if v is not None:
+                try:
+                    f = float(v)
+                    if np.isfinite(f):
+                        return f
+                except Exception:
+                    return v  # chaîne de caractères (sector, name…)
+        return fallback
+
+    pe      = _get("trailingPE", "forwardPE")
+    pb      = _get("priceToBook")
+    gross_m = _get("grossMargins")
+    oper_m  = _get("operatingMargins")
+    debt_eq = _get("debtToEquity")
+    roe     = _get("returnOnEquity")
+    mktcap  = _get("marketCap") or fi.get("market_cap")
+    currency = info.get("currency") or fi.get("currency") or "USD"
+    sector  = info.get("sector")   or static.get("sector")  or "—"
+    name    = (info.get("longName") or info.get("shortName")
+               or static.get("name") or ticker)
+
+    # Normaliser les ratios retournés en décimal par yfinance → pourcentage
+    if gross_m is not None and abs(gross_m) <= 2.0:
         gross_m = gross_m * 100
-    if oper_m is not None and oper_m <= 1:
-        oper_m = oper_m * 100
-    if roe is not None and roe <= 1:
-        roe = roe * 100
+    if oper_m is not None and abs(oper_m) <= 2.0:
+        oper_m  = oper_m * 100
+    if roe is not None and abs(roe) <= 2.0:
+        roe     = roe * 100
 
     return {
         "ticker":   ticker.upper(),
