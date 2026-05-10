@@ -35,19 +35,20 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 @st.cache_data(ttl=1800, show_spinner=False)
 def load_stock(ticker: str) -> dict:
-    """Download price history + fundamentals for one ticker.
-    Utilise Ticker.history() — API stable, zéro MultiIndex."""
-    try:
-        hist = yf.Ticker(ticker).history(period="14mo", auto_adjust=True)
-    except Exception:
-        return {}
-    if hist.empty or "Close" not in hist.columns:
+    """Download price history + fundamentals for one ticker."""
+    end   = datetime.today()
+    start = end - timedelta(days=400)
+
+    hist = yf.download(ticker, start=start, end=end,
+                       auto_adjust=True, progress=False)
+    if hist.empty:
         return {}
 
+    # flatten MultiIndex if needed
+    if isinstance(hist.columns, pd.MultiIndex):
+        hist.columns = hist.columns.get_level_values(0)
+
     close = hist["Close"].dropna()
-    # normalise timezone → index tz-naive
-    if close.index.tz is not None:
-        close.index = close.index.tz_convert(None)
     if len(close) < 30:
         return {}
 
