@@ -183,9 +183,14 @@ prices = prices[valid_tickers].dropna(how="all")
 w_arr  = np.array([weights[t] for t in valid_tickers])
 w_arr  = w_arr / w_arr.sum()
 
-# Daily returns & correlation
-rets   = prices.pct_change().dropna()
-corr   = rets.corr()
+# Daily returns — dropna(how="any") supprime les jours où un titre manque.
+# Si trop peu de lignes restent (actifs internationaux / ETFs), on garde
+# toutes les lignes valides et on remplace les NaN par 0 (pas de mouvement).
+rets_raw = prices.pct_change()
+rets     = rets_raw.dropna(how="any")
+if len(rets) < 60:                          # seuil : 60 jours minimum
+    rets = rets_raw.dropna(how="all").fillna(0)
+corr     = rets.corr(min_periods=30)
 sector_map = {t: meta[t]["sector"] for t in valid_tickers}
 
 # RSI per position
@@ -393,8 +398,8 @@ st.markdown("### Performance & Risque")
 
 # Normalised cumulative portfolio vs equal-weight benchmark
 try:
-    port_rets   = (rets * w_arr).sum(axis=1)
-    ew_rets     = rets.mean(axis=1)
+    port_rets   = rets[valid_tickers].dot(w_arr)   # alignement explicite colonnes→poids
+    ew_rets     = rets[valid_tickers].mean(axis=1)
     cum_port    = (1 + port_rets).cumprod()
     cum_ew      = (1 + ew_rets).cumprod()
 
@@ -451,16 +456,11 @@ except Exception:
 # ─────────────────────────────────────────────────────────────────────────────
 
 try:
-    # Download SPY as benchmark
-    end_spy   = datetime.today()
-    start_spy = end_spy - timedelta(days=400)
-    spy_raw   = yf.download("SPY", start=start_spy, end=end_spy,
-                             auto_adjust=True, progress=False)
-    if isinstance(spy_raw.columns, pd.MultiIndex):
-        spy_close = spy_raw["Close"]["SPY"]
-    else:
-        spy_close = spy_raw["Close"]
-
+    # Benchmark SPY via Ticker.history() — API stable, pas de MultiIndex
+    _spy_hist  = yf.Ticker("SPY").history(period="14mo", auto_adjust=True)
+    spy_close  = _spy_hist["Close"].dropna()
+    if spy_close.index.tz is not None:
+        spy_close.index = spy_close.index.tz_convert(None)
     spy_rets = spy_close.pct_change().dropna()
 
     # Align dates
