@@ -79,8 +79,18 @@ def plotly_layout(**overrides) -> dict:
     result = dict(_PLOTLY_BASE)
     # Merge axis/legend defaults, puis les surcharges caller
     for key, default_val in _PLOTLY_AXES.items():
-        if key in overrides and isinstance(overrides[key], dict):
-            # Fusionner le défaut avec la surcharge (la surcharge prime)
+        if key == "title":
+            # N'injecter "title" que si le caller le fournit explicitement
+            # (sinon Plotly affiche "undefined" quand text est absent)
+            if key in overrides:
+                merged = dict(default_val)
+                if isinstance(overrides[key], dict):
+                    merged.update(overrides.pop(key))
+                else:
+                    merged["text"] = overrides.pop(key)
+                result[key] = merged
+            # sinon : pas de title dans le layout → pas d'"undefined"
+        elif key in overrides and isinstance(overrides[key], dict):
             merged = dict(default_val)
             merged.update(overrides.pop(key))
             result[key] = merged

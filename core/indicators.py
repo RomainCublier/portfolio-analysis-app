@@ -372,9 +372,11 @@ def portfolio_diversification(
     tickers_in_corr = [t for t in tickers if t in corr_matrix.columns]
     if len(tickers_in_corr) >= 2:
         sub_corr  = corr_matrix.loc[tickers_in_corr, tickers_in_corr]
-        corr_vals = sub_corr.values
+        corr_vals = sub_corr.values.astype(float)
         mask      = ~np.eye(len(corr_vals), dtype=bool)
-        avg_corr  = float(corr_vals[mask].mean())
+        off_diag  = corr_vals[mask]
+        valid     = off_diag[~np.isnan(off_diag)]          # ignorer les paires sans min_periods
+        avg_corr  = float(valid.mean()) if len(valid) > 0 else 0.5
     else:
         avg_corr = 0.5
 
