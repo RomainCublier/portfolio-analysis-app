@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "instruments": [
+    {
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
+      "category": "Actions — marchés développés",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251882",
+      "source_date": null,
+      "facts": {
+        "share_currency": "USD",
+        "launch_date": "2009-09-25",
+        "fee_percent": 0.2,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique optimisée",
+        "benchmark": "MSCI World Index (Net)",
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "IE00B4K48X80",
+      "name": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
+      "category": "Actions — Europe",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251861",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "2009-09-25",
+        "fee_percent": 0.12,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique optimisée",
+        "benchmark": "MSCI Europe Index",
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "IE00BF4RFH31",
+      "name": "iShares MSCI World Small Cap UCITS ETF USD (Acc)",
+      "category": "Actions — petites capitalisations développées",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/296576/ishares-msci-world-small-cap-ucits-etf",
+      "source_date": null,
+      "facts": {
+        "share_currency": "USD",
+        "launch_date": "2018-03-27",
+        "fee_percent": 0.35,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique optimisée",
+        "benchmark": "MSCI World Small Cap Index (Net)",
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "IE00BKM4GZ66",
+      "name": "iShares Core MSCI EM IMI UCITS ETF USD (Acc)",
+      "category": "Actions — marchés émergents",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/264659",
+      "source_date": null,
+      "facts": {
+        "share_currency": "USD",
+        "launch_date": "2014-05-30",
+        "fee_percent": 0.18,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique, réplication",
+        "benchmark": "MSCI Emerging Markets Investable Market Index (USD) (Net)",
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "IE00BDBRDM35",
+      "name": "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
+      "category": "Obligations — global investment grade",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "2017-11-21",
+        "fee_percent": 0.1,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique par échantillonnage",
+        "benchmark": "Bloomberg Global Aggregate Bond Index",
+        "pea": null,
+        "hedging": "EUR",
+        "benchmark_note": "Indice affiché par l’émetteur au niveau du fonds. Ne pas utiliser sa série USD comme benchmark de la part couverte EUR sans adaptation documentée."
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "FR001400U5Q4",
+      "name": "Amundi PEA Monde (MSCI World) UCITS ETF Acc",
+      "category": "Actions — marchés développés / PEA",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR001400U5Q4/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+      "source_date": "2026-08-31",
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "2025-03-04",
+        "fee_percent": 0.2,
+        "fee_label": "Frais de gestion et autres coûts administratifs ou d’exploitation",
+        "income": "Capitalisation",
+        "replication": "Synthétique",
+        "benchmark": "MSCI World Index (EUR), dividendes nets réinvestis",
+        "pea": true,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed"
+    },
+    {
+      "isin": "LU0290358497",
+      "name": "Xtrackers II EUR Overnight Rate Swap UCITS ETF 1C",
+      "category": "Taux au jour le jour — fiche à compléter",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://etf.dws.com/en-gb/LU0290358497-eur-overnight-rate-swap-ucits-etf-1c/",
+      "source_date": null,
+      "facts": {
+        "share_currency": null,
+        "launch_date": null,
+        "fee_percent": null,
+        "fee_label": null,
+        "income": null,
+        "replication": null,
+        "benchmark": null,
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed",
+      "review_note": "Identité confirmée par le résultat de recherche de l’émetteur. Page dynamique sans caractéristiques lisibles lors de la consultation ; ne pas compléter depuis la mémoire ou une source secondaire."
+    }
+  ]
+}

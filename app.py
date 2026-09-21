@@ -13,6 +13,7 @@ st.markdown(CSS, unsafe_allow_html=True)
 navigation = st.navigation(
     {"Mon espace": [
         st.Page("pages/commencer.py", title="Construire mon projet", icon="🌱", default=True),
+        st.Page("pages/catalogue.py", title="Explorer les ETF", icon="🔎"),
         st.Page("pages/positions_reelles.py", title="Mon portefeuille réel", icon="📊"),
     ], "Laboratoire — fonctions expérimentales": [
         st.Page("pages/portefeuille.py",    title="Diagnostic expérimental",    icon="🧪"),

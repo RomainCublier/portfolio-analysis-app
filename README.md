@@ -16,3 +16,8 @@ L’export CSV des positions est un état daté, pas un historique de transactio
 
 Voir [l’audit et la feuille de route](docs/FOUNDATIONS.md) pour les défauts
 identifiés dans les anciens calculs et les critères avant commercialisation.
+
+Le [socle de données et les méthodes](docs/DATA_AND_METHODS.md) décrivent le
+catalogue émetteurs, ses informations manquantes et le noyau strict de backtest.
+La page « Explorer les ETF » fonctionne hors ligne à partir du catalogue daté.
+Aucun historique de marché ni licence commerciale n'est connecté par ce lot.
