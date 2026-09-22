@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "instruments": [
     {
       "isin": "IE00B4L5Y983",
@@ -20,7 +20,9 @@
         "hedging": null
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "IE00B4K48X80",
@@ -41,7 +43,9 @@
         "hedging": null
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "IE00BF4RFH31",
@@ -62,7 +66,9 @@
         "hedging": null
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "IE00BKM4GZ66",
@@ -83,7 +89,9 @@
         "hedging": null
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "IE00BDBRDM35",
@@ -105,7 +113,9 @@
         "benchmark_note": "Indice affiché par l’émetteur au niveau du fonds. Ne pas utiliser sa série USD comme benchmark de la part couverte EUR sans adaptation documentée."
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "FR001400U5Q4",
@@ -126,7 +136,9 @@
         "hedging": null
       },
       "market_data_status": "not_connected",
-      "commercial_rights": "not_assessed"
+      "commercial_rights": "not_assessed",
+      "instrument_kind": "ETF",
+      "management_style": null
     },
     {
       "isin": "LU0290358497",
@@ -148,7 +160,85 @@
       },
       "market_data_status": "not_connected",
       "commercial_rights": "not_assessed",
-      "review_note": "Identité confirmée par le résultat de recherche de l’émetteur. Page dynamique sans caractéristiques lisibles lors de la consultation ; ne pas compléter depuis la mémoire ou une source secondaire."
+      "review_note": "Identité confirmée par le résultat de recherche de l’émetteur. Page dynamique sans caractéristiques lisibles lors de la consultation ; ne pas compléter depuis la mémoire ou une source secondaire.",
+      "instrument_kind": "ETF",
+      "management_style": null
+    },
+    {
+      "isin": "FR0000284689",
+      "name": "Comgest Monde C",
+      "category": "Actions internationales — gestion active",
+      "instrument_kind": "Fonds",
+      "management_style": "Active",
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.comgest.com/en/se/private-investor/funds/comgest-monde-c",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "1991-06-27",
+        "fee_percent": 2.08,
+        "fee_label": "Frais courants (ongoing charges)",
+        "income": "Capitalisation",
+        "replication": null,
+        "benchmark": "MSCI AC World - Net Return (comparaison uniquement)",
+        "pea": null,
+        "hedging": "Non couverte",
+        "entry_fee_max_percent": 2.5
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed",
+      "review_note": "Le fonds ne réplique pas son indicateur de comparaison. Les compositions sous-jacentes ne sont pas intégrées ; aucune transparisation déduite du nom du fonds."
+    },
+    {
+      "isin": "FR0010135103",
+      "name": "Carmignac Patrimoine A EUR Acc",
+      "category": "Multi-actifs — gestion diversifiée",
+      "instrument_kind": "Fonds",
+      "management_style": null,
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://www.carmignac.com/en/our-funds/carmignac-patrimoine-FR0010135103-a-eur-acc/characteristics-risks",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": null,
+        "fee_percent": 1.8,
+        "fee_label": "Frais de gestion et autres coûts administratifs ou opérationnels",
+        "income": "Capitalisation",
+        "replication": null,
+        "benchmark": "40 % MSCI AC World NR + 40 % ICE BofA Global Government + 20 % €STR capitalisé ; rééquilibrage trimestriel",
+        "pea": null,
+        "hedging": null,
+        "entry_fee_max_percent": 4.0,
+        "transaction_cost_estimate_percent": 0.32,
+        "performance_fee_note": "Commission conditionnelle : maximum de 20 % de la surperformance selon les conditions de la source. Ce n’est pas 20 % du capital."
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed",
+      "review_note": "Les pondérations de l’indicateur de référence ne sont pas les positions du fonds. La date de première VL publiée n’est pas reprise comme date de création de cette part sans vérification supplémentaire. Les frais publiés ne doivent pas être additionnés automatiquement : périmètres à vérifier dans le DIC."
+    },
+    {
+      "isin": "FR0000121014",
+      "name": "LVMH",
+      "category": "Action individuelle",
+      "instrument_kind": "Action",
+      "management_style": null,
+      "reviewed_on": "2026-09-21",
+      "source_url": "https://live.euronext.com/en/product/equities/FR0000121014-XPAR",
+      "source_date": null,
+      "facts": {
+        "share_currency": null,
+        "launch_date": null,
+        "fee_percent": null,
+        "fee_label": null,
+        "income": null,
+        "replication": null,
+        "benchmark": null,
+        "pea": null,
+        "hedging": null
+      },
+      "market_data_status": "not_connected",
+      "commercial_rights": "not_assessed",
+      "review_note": "Identité ISIN vérifiée auprès de la place de marché. Cours, secteur, devise, éligibilité PEA et historique non intégrés. Présence illustrative, sans thèse d’investissement ni recommandation."
     }
   ]
 }

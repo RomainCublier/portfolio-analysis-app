@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 import re
 
-CATALOG = Path(__file__).resolve().parents[1] / "data/catalog/etfs.json"
+CATALOG = Path(__file__).resolve().parents[1] / "data/catalog/instruments.json"
 
 
 def valid_isin(value):
@@ -21,10 +21,12 @@ def valid_isin(value):
 
 def load_catalog(path=CATALOG):
     data = json.loads(Path(path).read_text())
-    if data.get("schema_version") != 1:
+    if data.get("schema_version") != 2:
         raise ValueError("Version du catalogue non reconnue.")
     seen = set()
     for row in data["instruments"]:
+        if row.get("instrument_kind") not in {"ETF", "Fonds", "Action"}:
+            raise ValueError("Type de support non reconnu.")
         if not valid_isin(row["isin"]) or row["isin"] in seen:
             raise ValueError("ISIN invalide ou dupliqué.")
         seen.add(row["isin"])
@@ -50,5 +52,9 @@ def review_status(row, today=None, max_age_days=30):
     age = (today - date.fromisoformat(row["reviewed_on"])).days
     if age < 0 or age > max_age_days:
         return "À revérifier"
-    required = ("launch_date", "share_currency", "fee_percent", "income", "replication", "benchmark")
+    if row["instrument_kind"] == "Action":
+        return "Identité documentée — analyse à compléter"
+    required = ("launch_date", "share_currency", "fee_percent", "income", "benchmark")
+    if row["instrument_kind"] == "ETF":
+        required += ("replication",)
     return "Caractéristiques documentées" if all(row["facts"].get(k) is not None for k in required) else "Fiche incomplète"

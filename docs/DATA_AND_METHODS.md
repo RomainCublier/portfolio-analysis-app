@@ -9,7 +9,7 @@
    caractéristiques d'un fonds ou comme estimations calibrées sur un historique absent.
 
 ## Premier catalogue
-`data/catalog/etfs.json` contient sept identités : six fiches de caractéristiques
+`data/catalog/instruments.json` contenait initialement sept identités : six fiches de caractéristiques
 documentées et une fiche overnight DWS à compléter. Univers de recherche limité,
 ni inventaire du marché ni sélection des « meilleurs » supports. Sources émetteurs
 consultées le 21 septembre 2026 ; seule la fiche Amundi est explicitement datée
@@ -86,3 +86,8 @@ calendriers, couverture EUR/FX, droits et coût pour le service envisagé. Archi
 échantillons autorisés ; rapprocher les rendements de publications émetteurs ; puis
 connecter le noyau à une page de backtest avec rapport de couverture. Ne pas présenter
 les tests numériques de cette branche comme un backtest réel de ces sept ETF.
+
+## Extension fonds et actions
+Le lot 3 porte le catalogue à dix supports (sept ETF, deux fonds et une action).
+Voir [MULTI_ASSET_RISK.md](MULTI_ASSET_RISK.md) pour les nouveaux champs, les limites
+de couverture et les contrôles d’allocation. Schéma du référentiel : version 2.
