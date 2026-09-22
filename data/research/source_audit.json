@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "instruments": [
+    {
+      "isin": "IE00B4L5Y983",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251882",
+      "checked_on": "2026-09-22",
+      "annual_observations": 10,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture."
+    },
+    {
+      "isin": "IE00B4K48X80",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251861",
+      "checked_on": "2026-09-22",
+      "annual_observations": 10,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture."
+    },
+    {
+      "isin": "IE00BF4RFH31",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/296576/ishares-msci-world-small-cap-ucits-etf",
+      "checked_on": "2026-09-22",
+      "annual_observations": 7,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture."
+    },
+    {
+      "isin": "IE00BKM4GZ66",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/264659",
+      "checked_on": "2026-09-22",
+      "annual_observations": 10,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture."
+    },
+    {
+      "isin": "IE00BDBRDM35",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
+      "checked_on": "2026-09-22",
+      "annual_observations": 8,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture. Part EUR couverte ; comparateur publié en USD. Ne pas comparer directement ces deux séries."
+    },
+    {
+      "isin": "FR001400U5Q4",
+      "source_url": "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR001400U5Q4/FRA/FRA/INSTITUTIONNEL/ETF/20260831",
+      "checked_on": "2026-09-22",
+      "annual_observations": 0,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Reporting PDF daté du 31/08/2026, destiné aux professionnels. Tableau des années civiles vide : aucune année complète reconstituée. Rechercher une documentation adaptée aux particuliers."
+    },
+    {
+      "isin": "LU0290358497",
+      "source_url": "https://etf.dws.com/en-gb/LU0290358497-eur-overnight-rate-swap-ucits-etf-1c/",
+      "checked_on": "2026-09-22",
+      "annual_observations": 0,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Page officielle ouverte mais contenu dynamique non lisible. Aucun champ financier nouveau validé."
+    },
+    {
+      "isin": "FR0000284689",
+      "source_url": "https://www.comgest.com/en/se/private-investor/funds/comgest-monde-c",
+      "checked_on": "2026-09-22",
+      "annual_observations": 10,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle et cinq premières positions lisibles au 31/08/2026. Positions partielles non intégrées au moteur : identifiants émetteurs à résoudre."
+    },
+    {
+      "isin": "FR0010135103",
+      "source_url": "https://www.carmignac.com/en/our-funds/carmignac-patrimoine-FR0010135103-a-eur-acc/characteristics-risks",
+      "checked_on": "2026-09-22",
+      "annual_observations": 10,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Table annuelle lisible sur la page caractéristiques ; page performances accessible via son lien officiel."
+    },
+    {
+      "isin": "FR0000121014",
+      "source_url": "https://live.euronext.com/en/product/equities/FR0000121014-XPAR",
+      "checked_on": "2026-09-22",
+      "annual_observations": 0,
+      "daily_history": "not_retrieved",
+      "commercial_rights": "not_assessed",
+      "findings": "Page de marché et titres de communiqués accessibles. Aucun historique de cours ajustés ni distribution récupéré."
+    }
+  ]
+}

@@ -1,0 +1,392 @@
+{
+  "schema_version": 1,
+  "purpose": "Contrôle des historiques fournisseurs uniquement ; pas une série quotidienne ni une sélection de placements.",
+  "series": [
+    {
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
+      "currency": "USD",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251882",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year / Total Return",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "NAV; revenus bruts réinvestis lorsque applicable, selon la méthodologie émetteur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2016,
+          "return_percent": 7.7
+        },
+        {
+          "year": 2017,
+          "return_percent": 22.4
+        },
+        {
+          "year": 2018,
+          "return_percent": -8.6
+        },
+        {
+          "year": 2019,
+          "return_percent": 27.8
+        },
+        {
+          "year": 2020,
+          "return_percent": 15.9
+        },
+        {
+          "year": 2021,
+          "return_percent": 21.9
+        },
+        {
+          "year": 2022,
+          "return_percent": -18.0
+        },
+        {
+          "year": 2023,
+          "return_percent": 23.9
+        },
+        {
+          "year": 2024,
+          "return_percent": 18.7
+        },
+        {
+          "year": 2025,
+          "return_percent": 21.2
+        }
+      ]
+    },
+    {
+      "isin": "IE00B4K48X80",
+      "name": "iShares Core MSCI Europe UCITS ETF EUR (Acc)",
+      "currency": "EUR",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251861",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year / Total Return",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "NAV; revenus bruts réinvestis lorsque applicable, selon la méthodologie émetteur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2016,
+          "return_percent": 2.6
+        },
+        {
+          "year": 2017,
+          "return_percent": 10.3
+        },
+        {
+          "year": 2018,
+          "return_percent": -10.4
+        },
+        {
+          "year": 2019,
+          "return_percent": 26.4
+        },
+        {
+          "year": 2020,
+          "return_percent": -3.2
+        },
+        {
+          "year": 2021,
+          "return_percent": 25.5
+        },
+        {
+          "year": 2022,
+          "return_percent": -9.2
+        },
+        {
+          "year": 2023,
+          "return_percent": 16.1
+        },
+        {
+          "year": 2024,
+          "return_percent": 8.8
+        },
+        {
+          "year": 2025,
+          "return_percent": 19.7
+        }
+      ]
+    },
+    {
+      "isin": "IE00BF4RFH31",
+      "name": "iShares MSCI World Small Cap UCITS ETF USD (Acc)",
+      "currency": "USD",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/296576/ishares-msci-world-small-cap-ucits-etf",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year / Total Return",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "NAV; revenus bruts réinvestis lorsque applicable, selon la méthodologie émetteur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2019,
+          "return_percent": 25.7
+        },
+        {
+          "year": 2020,
+          "return_percent": 15.8
+        },
+        {
+          "year": 2021,
+          "return_percent": 15.8
+        },
+        {
+          "year": 2022,
+          "return_percent": -18.6
+        },
+        {
+          "year": 2023,
+          "return_percent": 16.0
+        },
+        {
+          "year": 2024,
+          "return_percent": 7.9
+        },
+        {
+          "year": 2025,
+          "return_percent": 19.8
+        }
+      ]
+    },
+    {
+      "isin": "IE00BKM4GZ66",
+      "name": "iShares Core MSCI EM IMI UCITS ETF USD (Acc)",
+      "currency": "USD",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/264659",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year / Total Return",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "NAV; revenus bruts réinvestis lorsque applicable, selon la méthodologie émetteur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2016,
+          "return_percent": 9.6
+        },
+        {
+          "year": 2017,
+          "return_percent": 37.0
+        },
+        {
+          "year": 2018,
+          "return_percent": -14.8
+        },
+        {
+          "year": 2019,
+          "return_percent": 17.5
+        },
+        {
+          "year": 2020,
+          "return_percent": 18.4
+        },
+        {
+          "year": 2021,
+          "return_percent": -0.2
+        },
+        {
+          "year": 2022,
+          "return_percent": -19.8
+        },
+        {
+          "year": 2023,
+          "return_percent": 11.6
+        },
+        {
+          "year": 2024,
+          "return_percent": 7.2
+        },
+        {
+          "year": 2025,
+          "return_percent": 31.6
+        }
+      ]
+    },
+    {
+      "isin": "IE00BDBRDM35",
+      "name": "iShares Core Global Aggregate Bond UCITS ETF EUR Hedged (Acc)",
+      "currency": "EUR",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year / Total Return",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "NAV; revenus bruts réinvestis lorsque applicable, selon la méthodologie émetteur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2018,
+          "return_percent": -1.1
+        },
+        {
+          "year": 2019,
+          "return_percent": 5.0
+        },
+        {
+          "year": 2020,
+          "return_percent": 3.9
+        },
+        {
+          "year": 2021,
+          "return_percent": -2.5
+        },
+        {
+          "year": 2022,
+          "return_percent": -13.6
+        },
+        {
+          "year": 2023,
+          "return_percent": 4.6
+        },
+        {
+          "year": 2024,
+          "return_percent": 1.5
+        },
+        {
+          "year": 2025,
+          "return_percent": 2.6
+        }
+      ]
+    },
+    {
+      "isin": "FR0000284689",
+      "name": "Comgest Monde C",
+      "currency": "EUR",
+      "source_url": "https://www.comgest.com/en/se/private-investor/funds/comgest-monde-c",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year Past Performance",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "Performance nette des frais courants, hors frais entrée/sortie.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2016,
+          "return_percent": 3.1
+        },
+        {
+          "year": 2017,
+          "return_percent": 19.4
+        },
+        {
+          "year": 2018,
+          "return_percent": 3.9
+        },
+        {
+          "year": 2019,
+          "return_percent": 23.3
+        },
+        {
+          "year": 2020,
+          "return_percent": 11.6
+        },
+        {
+          "year": 2021,
+          "return_percent": 16.0
+        },
+        {
+          "year": 2022,
+          "return_percent": -20.1
+        },
+        {
+          "year": 2023,
+          "return_percent": 21.8
+        },
+        {
+          "year": 2024,
+          "return_percent": 15.4
+        },
+        {
+          "year": 2025,
+          "return_percent": -0.4
+        }
+      ]
+    },
+    {
+      "isin": "FR0010135103",
+      "name": "Carmignac Patrimoine A EUR Acc",
+      "currency": "EUR",
+      "source_url": "https://www.carmignac.com/en/our-funds/carmignac-patrimoine-FR0010135103-a-eur-acc/characteristics-risks",
+      "retrieved_on": "2026-09-22",
+      "source_section": "Calendar Year Performance",
+      "extraction": "manual_transcription_from_official_web_page",
+      "unit": "percent",
+      "frequency": "calendar_year",
+      "published_decimal_places": 1,
+      "performance_basis": "Performance nette de frais, hors éventuels frais entrée distributeur.",
+      "commercial_rights": "not_assessed",
+      "daily_backtest_ready": false,
+      "independent_cross_check": false,
+      "returns": [
+        {
+          "year": 2016,
+          "return_percent": 3.9
+        },
+        {
+          "year": 2017,
+          "return_percent": 0.1
+        },
+        {
+          "year": 2018,
+          "return_percent": -11.3
+        },
+        {
+          "year": 2019,
+          "return_percent": 10.5
+        },
+        {
+          "year": 2020,
+          "return_percent": 12.4
+        },
+        {
+          "year": 2021,
+          "return_percent": -0.9
+        },
+        {
+          "year": 2022,
+          "return_percent": -9.4
+        },
+        {
+          "year": 2023,
+          "return_percent": 2.2
+        },
+        {
+          "year": 2024,
+          "return_percent": 7.1
+        },
+        {
+          "year": 2025,
+          "return_percent": 12.1
+        }
+      ]
+    }
+  ]
+}
