@@ -10,7 +10,7 @@ def test_catalog_provenance_and_unknowns():
     rows = load_catalog()
     assert len(rows) == 10
     assert all(valid_isin(r["isin"]) for r in rows)
-    assert sum(r["facts"]["fee_percent"] is not None for r in rows) == 8
+    assert sum(r["facts"]["fee_percent"] is not None for r in rows) == 9
     assert [r["isin"] for r in rows if r["facts"]["pea"] is True] == ["FR001400U5Q4"]
     assert all(r["market_data_status"] == "not_connected" for r in rows)
     assert all(r["commercial_rights"] != "approved" for r in rows)
@@ -19,7 +19,10 @@ def test_catalog_provenance_and_unknowns():
 def test_review_expiry_and_incomplete_are_not_verified():
     rows = load_catalog()
     assert review_status(rows[0], date(2026, 9, 21)) == "Caractéristiques documentées"
-    assert review_status(next(r for r in rows if r["isin"] == "LU0290358497"), date(2026, 9, 21)) == "Fiche incomplète"
+    overnight = next(r for r in rows if r["isin"] == "LU0290358497")
+    assert review_status(overnight, date(2026, 9, 22)) == "Caractéristiques documentées"
+    incomplete = {**overnight, "facts": {**overnight["facts"], "fee_percent": None}}
+    assert review_status(incomplete, date(2026, 9, 22)) == "Fiche incomplète"
     assert review_status(rows[0], date(2027, 1, 1)) == "À revérifier"
     assert not valid_isin("IE00B4L5Y984")
 

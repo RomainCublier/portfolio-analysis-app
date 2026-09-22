@@ -58,3 +58,28 @@ aucune approbation commerciale n'est déduite de l'accessibilité sur le web.
 
 Les sources officielles servent de référence ; moteurs de recherche et sites
 secondaires peuvent aider à les découvrir, sans remplacer la preuve par champ.
+
+## Complément : sources difficiles et distributions
+
+La fiche PDF Xtrackers a permis de compléter le catalogue. L'échec de lecture de
+la page initiale reste consigné dans l'audit ; une source complémentaire documente
+la résolution. L'historique quotidien n'est toujours pas récupéré.
+
+`dividend_reference_events.json` conserve six versements LVMH relatifs aux exercices
+2023–2025, issus de la page française de l'émetteur. Le communiqué du 23 avril 2026
+corrobore les dates de paiement de l'exercice 2025. Les données ne sont pas réputées
+vérifiées par deux sources indépendantes : elles viennent du même émetteur.
+La date de détachement reste inconnue : le dernier jour dividende attaché n'est
+pas le jour de détachement. Les événements ne sont pas injectés dans les calculs.
+Le total fiscal annuel n'est pas un septième flux à additionner aux versements.
+L'acompte futur annoncé pour décembre 2026 est exclu de ce lot historique.
+
+`source_conflicts.json` conserve les versions contradictoires du calendrier LVMH
+et justifie le choix du communiqué daté. Ne pas supprimer la trace d'un désaccord
+après avoir sélectionné une valeur. Les droits de réutilisation des cours affichés
+sur la page LVMH sont réservés selon sa mention Euronext ; aucun flux de cours
+n'est extrait ou redistribué par ce lot.
+
+L'article pédagogique Amundi pour particuliers confirme l'identité et la création
+de la part ; il ne suffit pas à remplacer la documentation produit complète.
+Le catalogue signale désormais le public professionnel du reporting existant.

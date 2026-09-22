@@ -53,7 +53,14 @@
       "annual_observations": 0,
       "daily_history": "not_retrieved",
       "commercial_rights": "not_assessed",
-      "findings": "Reporting PDF daté du 31/08/2026, destiné aux professionnels. Tableau des années civiles vide : aucune année complète reconstituée. Rechercher une documentation adaptée aux particuliers."
+      "findings": "Reporting PDF daté du 31/08/2026, destiné aux professionnels. Tableau des années civiles vide : aucune année complète reconstituée. Rechercher une documentation adaptée aux particuliers.",
+      "additional_sources": [
+        {
+          "url": "https://www.amundietf.fr/fr/particuliers/comprendre-les-etf/placer-son-epargne-en-bourse/diversifier",
+          "checked_on": "2026-09-22",
+          "finding": "Article pédagogique particuliers citant l’ISIN et la date de création. Ne remplace pas le DIC ni le reporting complet."
+        }
+      ]
     },
     {
       "isin": "LU0290358497",
@@ -62,7 +69,15 @@
       "annual_observations": 0,
       "daily_history": "not_retrieved",
       "commercial_rights": "not_assessed",
-      "findings": "Page officielle ouverte mais contenu dynamique non lisible. Aucun champ financier nouveau validé."
+      "findings": "Page officielle ouverte mais contenu dynamique non lisible. Aucun champ financier nouveau validé.",
+      "additional_sources": [
+        {
+          "url": "https://etf.dws.com/en-lu/AssetDownload/Index/860f6cb8-aaa3-4629-9976-9432131197ab/Factsheet.pdf",
+          "source_date": "2026-08-31",
+          "checked_on": "2026-09-22",
+          "finding": "PDF lisible : caractéristiques complétées dans le catalogue ; changement historique d’indice documenté."
+        }
+      ]
     },
     {
       "isin": "FR0000284689",
@@ -89,7 +104,25 @@
       "annual_observations": 0,
       "daily_history": "not_retrieved",
       "commercial_rights": "not_assessed",
-      "findings": "Page de marché et titres de communiqués accessibles. Aucun historique de cours ajustés ni distribution récupéré."
+      "findings": "Page de marché et titres de communiqués accessibles. Aucun historique de cours ajustés ni distribution récupéré.",
+      "additional_sources": [
+        {
+          "url": "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse",
+          "checked_on": "2026-09-22",
+          "finding": "Six versements 2023–2026 relevés pour les exercices 2023–2025 ; historique incomplet."
+        },
+        {
+          "url": "https://www.lvmh.com/fr/publications/dividende-2025",
+          "source_date": "2026-04-23",
+          "checked_on": "2026-09-22",
+          "finding": "Confirme le calendrier de l’exercice 2025."
+        },
+        {
+          "url": "https://www.lvmh.com/investors/lvmh_share",
+          "checked_on": "2026-09-22",
+          "finding": "Date de versement de l’acompte 2025 contradictoire ; voir source_conflicts.json."
+        }
+      ]
     }
   ]
 }
