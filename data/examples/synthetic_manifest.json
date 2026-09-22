@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "expected_dates": [
+    "2020-12-31",
+    "2021-12-31",
+    "2022-12-31",
+    "2023-12-31"
+  ],
+  "calendar_source_url": "https://example.org/synthetic-calendar",
+  "series": {
+    "SYNTHETIC_A": {
+      "instrument_id": "SYNTHETIC_A",
+      "currency": "EUR",
+      "source_url": "https://example.org/synthetic-not-market-data",
+      "retrieved_at": "2026-09-22",
+      "inception_date": "2020-12-31",
+      "return_basis": "net_total_return",
+      "origin": "synthetic",
+      "license_status": "unknown",
+      "license_reference": "",
+      "raw_sha256": "cca885338365a68f1098491852d5c43839c965aa2595fb46ac863e0a01fb2519"
+    },
+    "SYNTHETIC_B": {
+      "instrument_id": "SYNTHETIC_B",
+      "currency": "EUR",
+      "source_url": "https://example.org/synthetic-not-market-data",
+      "retrieved_at": "2026-09-22",
+      "inception_date": "2020-12-31",
+      "return_basis": "net_total_return",
+      "origin": "synthetic",
+      "license_status": "unknown",
+      "license_reference": "",
+      "raw_sha256": "cca885338365a68f1098491852d5c43839c965aa2595fb46ac863e0a01fb2519"
+    }
+  }
+}

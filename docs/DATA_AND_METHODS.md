@@ -91,3 +91,36 @@ les tests numériques de cette branche comme un backtest réel de ces sept ETF.
 Le lot 3 porte le catalogue à dix supports (sept ETF, deux fonds et une action).
 Voir [MULTI_ASSET_RISK.md](MULTI_ASSET_RISK.md) pour les nouveaux champs, les limites
 de couverture et les contrôles d’allocation. Schéma du référentiel : version 2.
+
+## Import de recherche et écran historique
+
+L’écran « Explorer un historique » accepte un CSV UTF-8 séparé par des virgules
+(`date,identifiant…`) et un manifeste JSON version 1. Les exemples dans
+`data/examples/` sont **synthétiques**, sans instrument réel ni source de marché.
+Leurs URL `example.org` sont des marqueurs explicites, pas des sources vérifiées.
+
+Chaque série porte les champs de `SeriesMetadata`. `raw_sha256` est l’empreinte
+SHA-256 des octets du CSV entier, calculée avant import. `expected_dates` est un
+calendrier déclaré séparément, avec `calendar_source_url`. L’import vérifie
+l’empreinte, les identifiants, les dates exactes, l’absence de trous par rapport
+à ce calendrier, la positivité, la devise EUR et le rendement total net déclaré.
+Aucune interpolation, conversion de devise ou normalisation des poids.
+
+Ces contrôles ne vérifient pas que la source existe, que les cours sont corrects,
+que les distributions sont réellement réinvesties ou que le calendrier déclaré
+est le bon. Ils ne détectent pas les prix figés. Les droits commerciaux restent
+`unknown`, même si le fichier annonce `approved` : ils devront être validés côté
+serveur hors du parcours d’import. Aucun fournisseur de marché n’est connecté.
+
+Le calcul conserve les quantités initiales, sans rééquilibrage, flux, fiscalité
+ni frais de transaction. Les frais de fonds déjà inclus ne sont pas redéduits.
+La baisse maximale porte exclusivement sur les points observés, et peut donc
+sous-estimer les pertes intrapériode. Ni volatilité annualisée ni Sharpe ne sont
+inférés d’une fréquence inconnue. Le rapport exporte poids, méthode, provenance,
+empreintes, période et métriques. La courbe est également exportable.
+
+Avant production : valider un fournisseur (couverture par part/ISIN, rendement
+total et opérations sur titres, calendriers, devises, historique des fonds clos,
+corrections, droits d’affichage et de redistribution), conserver les réponses
+brutes et contrôler indépendamment un échantillon contre les publications des
+gérants. La présence publique de données ne vaut pas autorisation commerciale.
