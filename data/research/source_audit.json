@@ -15,9 +15,16 @@
       "source_url": "https://www.ishares.com/uk/individual/en/products/251861",
       "checked_on": "2026-09-22",
       "annual_observations": 10,
-      "daily_history": "not_retrieved",
+      "daily_history": "retrieved_research_2025_checked",
       "commercial_rights": "not_assessed",
-      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture."
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture.",
+      "additional_sources": [
+        {
+          "url": "https://www.ishares.com/uk/individual/en/products/251861",
+          "checked_on": "2026-09-23",
+          "finding": "Export XML du bouton Download récupéré directement. Calcul 2025 sur 254 dates VL, rapprochement annuel conforme à l’arrondi. Calendrier non vérifié indépendamment ; droits commerciaux non évalués. Voir ishares_europe_2025_check.json."
+        }
+      ]
     },
     {
       "isin": "IE00BF4RFH31",

@@ -83,3 +83,45 @@ n'est extrait ou redistribué par ce lot.
 L'article pédagogique Amundi pour particuliers confirme l'identité et la création
 de la part ; il ne suffit pas à remplacer la documentation produit complète.
 Le catalogue signale désormais le public professionnel du reporting existant.
+
+## Premier calcul sur export quotidien réel — 23 septembre 2026
+
+L'export public du bouton Download de la fiche iShares Europe (IE00B4K48X80)
+a été récupéré. Son extension est `.xls`, mais son contenu est du XML Spreadsheet.
+L'adaptateur `core/ishares_import.py` lit spécifiquement cette part en EUR à
+capitalisation. Il utilise la colonne du fonds dans la feuille Growth of
+Hypothetical 10,000, sans confondre celle-ci avec l'indice ou un cours exécutable.
+Les cellules XML à indices explicites sont respectées.
+
+Pour le 31 décembre 2024 au 31 décembre 2025, 254 observations passent le contrôle.
+Les huit dates supplémentaires de la courbe absentes des VL répètent exactement
+la valeur précédente : elles sont exclues et énumérées dans le rapport. Une
+variation à une date sans VL bloque l'import. Une date de VL sans rendement total
+bloque également l'import, comme les doublons et les bornes manquantes.
+Le calendrier de VL est fourni par le même émetteur : ce n'est pas une validation
+indépendante de la complétude. Une ligne de l'export ne contient qu'une donnée
+d'indice, sans date ni fonds : elle est comptée dans le rapport, sans usage dans
+la série du fonds. Toute ligne contenant une valeur du fonds sans date est refusée.
+
+Le calcul 100 % ETF Europe sans flux produit 19,715 % en 2025, contre 19,7 % publié,
+soit un écart compatible avec l'arrondi. La baisse maximale entre VL est d'environ
+16,25 %. C'est un contrôle du moteur et de la source sur cette période, pas une
+preuve de qualité pour tous les instruments ou d'une stratégie d'investissement.
+Le rapport `data/research/ishares_europe_2025_check.json` contient les empreintes,
+la méthode, les exclusions, la comparaison et les limites. Les cours et le fichier
+source complet ne sont pas redistribués dans Git. L'export téléchargé se trouve
+dans `.local-data/`, ignoré par Git ; sa conservation n'est pas un archivage distant.
+
+Reproduction à partir de l'export dont l'URL figure dans le rapport :
+
+```bash
+python -m scripts.check_ishares_europe .local-data/ishares_europe.xls \
+  --retrieved-at 2026-09-23 --output .local-data/rapport.json
+```
+
+Remplacer la date par celle de récupération effective pour un nouveau fichier.
+L'émetteur peut réviser son export : vérifier l'empreinte avant de prétendre
+reproduire exactement la même entrée. Les droits commerciaux restent non validés.
+L'interface Explorer un historique accepte désormais cet export via un mode
+d'import dédié, en complément du CSV accompagné de son manifeste. Aucun appel
+réseau automatique n'est ajouté à l'application.

@@ -1,8 +1,10 @@
 import json
+from datetime import date
 from pathlib import Path
 import streamlit as st
 from core.history_import import import_history
 from core.history import buy_and_hold, path_metrics
+from core.ishares_import import import_europe_export, SOURCE_URL
 
 st.title("Explorer un historique")
 st.write("Comparez une allocation initiale conservée sur une période passée, à partir de séries de rendement total net en euros.")
@@ -13,12 +15,26 @@ with st.expander("Préparer mes données"):
     for name in ["synthetic_history.csv", "synthetic_manifest.json"]:
         st.download_button("Télécharger " + name, (example / name).read_bytes(), file_name=name)
     st.caption("Ces fichiers sont entièrement synthétiques : ils expliquent le format et ne décrivent aucun placement réel.")
-csv_file = st.file_uploader("Historique CSV", type="csv")
-manifest_file = st.file_uploader("Manifeste JSON", type="json")
-if csv_file is None or manifest_file is None:
-    st.stop()
+mode = st.radio("Format de données", ["CSV et manifeste", "Export officiel iShares Europe"])
 try:
-    levels, metadata, calendar, report = import_history(csv_file.getvalue(), manifest_file.getvalue())
+    if mode == "CSV et manifeste":
+        csv_file = st.file_uploader("Historique CSV", type="csv")
+        manifest_file = st.file_uploader("Manifeste JSON", type="json")
+        if csv_file is None or manifest_file is None:
+            st.stop()
+        levels, metadata, calendar, report = import_history(csv_file.getvalue(), manifest_file.getvalue())
+    else:
+        st.write("Import dédié à iShares Core MSCI Europe EUR Acc (IE00B4K48X80). Utilisez le fichier du bouton Download de l’émetteur, au format XML avec extension .xls.")
+        st.link_button("Ouvrir l’export de l’émetteur", SOURCE_URL)
+        issuer_file = st.file_uploader("Export iShares", type=["xls", "xml"])
+        start = st.date_input("Date initiale exacte", date(2024, 12, 31))
+        end = st.date_input("Date finale exacte", date(2025, 12, 31))
+        if issuer_file is None:
+            st.stop()
+        levels, metadata, calendar, report = import_europe_export(issuer_file.getvalue(), date.today().isoformat(), start, end)
+        st.warning("Le calendrier est rapproché de la feuille des valeurs liquidatives du même émetteur. Il n’est pas vérifié auprès d’une source indépendante. Les droits commerciaux restent non validés.")
+        with st.expander("Contrôles de l’export"):
+            st.json(report)
 except ValueError as exc:
     st.error(f"Import refusé : {exc}")
     st.stop()
