@@ -1,13 +1,15 @@
 import json
+import pandas as pd
 from datetime import date
 from pathlib import Path
 import streamlit as st
 from core.history_import import import_history
 from core.history import buy_and_hold, path_metrics
+from core.cashflow_backtest import simulate_contributions, monthly_observation_dates
 from core.ishares_import import import_europe_export, import_multi_asset_exports, SOURCE_URL, BOND_SOURCE_URL
 
 st.title("Explorer un historique")
-st.write("Comparez une allocation initiale conservée sur une période passée, à partir de séries de rendement total net en euros.")
+st.write("Explorez une allocation sur une période passée, avec ou sans versements, à partir de séries de rendement total net en euros.")
 st.info("Version de recherche : aucun flux de marché n’est encore connecté. Les sources et les droits des fichiers importés restent à vérifier indépendamment.")
 with st.expander("Préparer mes données"):
     st.write("Importez un CSV (date puis une colonne par identifiant) et son manifeste JSON : calendrier attendu, sources, dates de récupération, origine et empreinte SHA-256 du CSV. Les distributions doivent être réinvesties et les frais des fonds déjà inclus. Un cours brut seul ne convient pas.")
@@ -62,17 +64,47 @@ weights = {key: st.number_input(f"Poids initial de {key} (%)", 0., 100., float(d
 if draft and set(draft) != set(levels):
     st.warning("Les identifiants importés diffèrent de votre allocation enregistrée. Vérifiez tous les poids ; aucun support absent n’est remplacé.")
 st.caption(f"Total : {sum(weights.values()):.1%}. Aucun ajustement automatique.")
+with_flows = st.checkbox("Simuler mes versements et le rééquilibrage")
+if with_flows:
+    initial = st.number_input("Capital initial (€)", min_value=1., value=1000., step=100.)
+    monthly = st.number_input("Versement par mois observé (€)", min_value=0., value=0., step=100.)
+    rebalancing = st.selectbox("Rééquilibrage vers les poids saisis", ["Aucun", "Mensuel"])
+    st.caption("À chaque date : variation du marché, puis versement réparti selon les poids saisis, puis rééquilibrage éventuel. Calcul en unités fractionnaires, hors courtage, spread et fiscalité.")
+    try:
+        schedule = monthly_observation_dates(calendar)
+    except ValueError as exc:
+        st.error(str(exc))
+        st.stop()
+    flows = pd.Series(0., index=calendar)
+    flows.loc[schedule] = monthly
+    rebalance_dates = schedule if rebalancing == "Mensuel" else pd.DatetimeIndex([])
+    st.dataframe(pd.DataFrame({"Date prévue": [str(d.date()) for d in schedule],
+        "Versement (€)": [monthly] * len(schedule), "Rééquilibrage": [rebalancing == "Mensuel"] * len(schedule)}), hide_index=True)
+    st.caption("Dates retenues : dernier point disponible de chaque mois après le mois initial. Si le dernier mois est incomplet, sa dernière date disponible est utilisée. Un versement au dernier point n’a pas encore produit de rendement. Vérifiez ce calendrier avant le calcul.")
 if st.button("Calculer sur cet historique", type="primary"):
     try:
-        curve, _ = buy_and_hold(levels, weights, metadata, calendar)
+        if with_flows:
+            ledger, realised_weights, simulation = simulate_contributions(levels, weights, metadata, calendar, initial, flows, rebalance_dates)
+            curve = ledger["time_weighted_index"]
+            report["simulation"] = simulation
+            a, b, c = st.columns(3)
+            a.metric("Total versé", f"{simulation['capital_paid']:.2f} €")
+            b.metric("Valeur finale", f"{simulation['final_value']:.2f} €")
+            c.metric("Gain ou perte", f"{simulation['gain_loss']:.2f} €")
+            st.line_chart(ledger[["portfolio_value", "capital_paid"]].rename(columns={"portfolio_value": "Valeur du portefeuille", "capital_paid": "Total versé"}), y_label="Euros")
+            st.caption("La courbe base 100 ci-dessous neutralise les apports (TWR). Elle mesure la performance du portefeuille, pas le rendement personnel pondéré par les montants investis.")
+            st.download_button("Exporter le journal des versements et valeurs", ledger.to_csv(), file_name="journal_simulation.csv", mime="text/csv")
+            st.download_button("Exporter les poids réalisés", realised_weights.to_csv(), file_name="poids_simulation.csv", mime="text/csv")
+        else:
+            curve, _ = buy_and_hold(levels, weights, metadata, calendar)
         metrics = path_metrics(curve)
         st.line_chart(curve * 100, y_label="Valeur base 100")
         a, b = st.columns(2)
-        a.metric("Rendement cumulé", f"{metrics['total_return']:.2%}")
+        a.metric("Performance neutralisée des versements (TWR)" if with_flows else "Rendement cumulé", f"{metrics['total_return']:.2%}")
         b.metric("Rendement annualisé géométrique", f"{metrics['cagr']:.2%}")
         st.write(f"Baisse maximale entre points observés : {metrics['max_drawdown']:.2%}.")
-        st.caption("Cette baisse peut sous-estimer les pertes entre observations, notamment avec des données mensuelles ou annuelles. Aucun rééquilibrage, versement, fiscalité ou frais de transaction ; frais des fonds déjà inclus dans les séries. Le passé ne prédit pas les performances futures.")
-        report.update(weights=weights, metrics=metrics, method="buy_and_hold_no_flows_v1")
+        st.caption("Cette baisse peut sous-estimer les pertes entre observations, notamment avec des données mensuelles ou annuelles. Frais des fonds déjà inclus dans les séries ; fiscalité et frais de transaction exclus. Les règles de versement et de rééquilibrage sont celles affichées, ou aucun flux/arbitrage si l’option est désactivée. Le passé ne prédit pas les performances futures.")
+        report.update(weights=weights, metrics=metrics, method="end_of_observation_contributions_v1" if with_flows else "buy_and_hold_no_flows_v1")
         st.download_button("Exporter le rapport de calcul", json.dumps(report, indent=2, ensure_ascii=False), file_name="rapport_historique.json", mime="application/json")
         st.download_button("Exporter la courbe", curve.to_csv(), file_name="courbe_historique.csv", mime="text/csv")
     except ValueError as exc:
