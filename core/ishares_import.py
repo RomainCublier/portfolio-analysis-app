@@ -1,4 +1,4 @@
-"""Research adapter for one reviewed iShares XML export, never a generic XLS reader.
+"""Research adapter for two reviewed iShares XML exports, never a generic XLS reader.
 
 The growth series is total return, not a tradable execution price. Valuation dates
 come from the separate NAV sheet in the same issuer file, not an independent calendar.
@@ -16,6 +16,9 @@ NAME = 'iShares Core MSCI Europe UCITS ETF EUR (Acc)'
 SOURCE_URL = ('https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?'
               'appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&'
               'portfolioId=251861&targetSite=ishares-uk&userType=individual')
+BOND_ISIN = 'IE00BDBRDM35'
+BOND_NAME = 'iShares Core Global Aggregate Bond UCITS ETF'
+BOND_SOURCE_URL = SOURCE_URL.replace('portfolioId=251861', 'portfolioId=291770')
 NS = 'urn:schemas-microsoft-com:office:spreadsheet'
 MONTHS = {m: i for i, m in enumerate(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], 1)}
 
@@ -46,11 +49,27 @@ def _number(value):
 
 
 def _sheets(raw):
-    if len(raw) > 5_000_000 or b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
+    if len(raw) > 32_000_000 or b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
         raise ValueError('Export trop volumineux ou XML non autorisé.')
     try:
-        root = ET.fromstring(raw)
-    except ET.ParseError as exc:
+        # The issuer export includes unrelated holdings/comments. Some contain
+        # unescaped ampersands. Only the three declared worksheets are parsed;
+        # never repair their contents or claim whole-workbook validation.
+        text = raw.decode('utf-8-sig')
+        opening = re.search(r'<(?P<prefix>\w+):Workbook\b[^>]*>', text)
+        if opening is None:
+            raise ValueError('En-tête XML Spreadsheet absent.')
+        prefix = opening.group('prefix')
+        blocks = re.findall(rf'<{prefix}:Worksheet\b[^>]*>.*?</{prefix}:Worksheet>', text, re.S)
+        if len(blocks) != len(re.findall(rf'<{prefix}:Worksheet\b', text)):
+            raise ValueError('Structure des feuilles invalide.')
+        keep = []
+        for block in blocks:
+            name = re.search(rf'{prefix}:Name="([^"]+)"', block.split('>', 1)[0])
+            if name and name.group(1) in {'Key Facts', 'Historical NAVs', 'Growth of Hypothetical 10,000'}:
+                keep.append(block)
+        root = ET.fromstring(opening.group(0) + ''.join(keep) + f'</{prefix}:Workbook>')
+    except (ET.ParseError, UnicodeError) as exc:
         raise ValueError('Export XML iShares attendu, pas un fichier XLS binaire.') from exc
     result = {}
     for sheet in root.findall(f'{{{NS}}}Worksheet'):
@@ -75,6 +94,14 @@ def _sheets(raw):
 
 
 def import_europe_export(raw, retrieved_at, start, end):
+    return _import_export(raw, retrieved_at, start, end, ISIN, NAME, SOURCE_URL, 'Inception Date')
+
+
+def import_bond_export(raw, retrieved_at, start, end):
+    return _import_export(raw, retrieved_at, start, end, BOND_ISIN, BOND_NAME, BOND_SOURCE_URL, 'Share Class Launch Date')
+
+
+def _import_export(raw, retrieved_at, start, end, isin, name, source_url, launch_field):
     sheets = _sheets(raw)
     required = {'Key Facts', 'Historical NAVs', 'Growth of Hypothetical 10,000'}
     if not required <= set(sheets):
@@ -85,11 +112,11 @@ def import_europe_export(raw, retrieved_at, start, end):
             if row[0] in facts:
                 raise ValueError('Caractéristique répétée.')
             facts[row[0]] = row[1]
-    if (facts.get('ISIN') != ISIN or facts.get('Share Class Currency') != 'EUR'
+    if (facts.get('ISIN') != isin or facts.get('Share Class Currency') != 'EUR'
             or facts.get('Use of Income') != 'Accumulating'):
         raise ValueError('Part, devise ou capitalisation incompatible.')
     growth_rows = sheets['Growth of Hypothetical 10,000']
-    if not growth_rows or growth_rows[0][:2] != [None, NAME]:
+    if not growth_rows or growth_rows[0][:2] != [None, name]:
         raise ValueError('Identité de la courbe non confirmée.')
     growth, nav = [], []
     benchmark_only_rows = 0
@@ -128,19 +155,35 @@ def import_europe_export(raw, retrieved_at, start, end):
     calendar = n.loc[start:end].index
     missing = calendar.difference(g.index)
     if len(missing):
-        raise ValueError('Courbe absente sur certaines dates de VL.')
+        raise ValueError('Courbe absente sur certaines dates de VL : ' + ', '.join(str(d.date()) for d in missing))
     extra = g.loc[start:end].index.difference(calendar)
     if any(g.loc[d] != g.shift(1).loc[d] for d in extra):
         raise ValueError('Variation de la courbe sur une date sans VL ; revue requise.')
-    levels = g.loc[calendar].to_frame(ISIN)
-    metadata = {ISIN: SeriesMetadata(ISIN, 'EUR', SOURCE_URL, retrieved_at,
-        str(_date(facts.get('Inception Date')).date()), 'net_total_return', 'fund', 'unknown', '',
+    levels = g.loc[calendar].to_frame(isin)
+    metadata = {isin: SeriesMetadata(isin, 'EUR', source_url, retrieved_at,
+        str(_date(facts.get(launch_field)).date()), 'net_total_return', 'fund', 'unknown', '',
         hashlib.sha256(raw).hexdigest())}
     report = validate_panel(levels, metadata, calendar)
-    report.update(source_url=SOURCE_URL, raw_sha256=metadata[ISIN].raw_sha256,
+    report.update(source_url=source_url, raw_sha256=metadata[isin].raw_sha256,
+        parsed_sections=sorted(required), whole_workbook_validated=False,
         calendar_basis='Dates de la feuille Historical NAVs du même export émetteur',
         independently_verified_calendar=False, excluded_flat_non_nav_dates=[str(d.date()) for d in extra],
         commercial_ready=False, ignored_benchmark_only_rows=benchmark_only_rows,
         method='issuer_growth_on_nav_dates_v1',
         return_basis_note='Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction.')
     return levels, metadata, calendar, report
+
+
+def import_multi_asset_exports(europe_raw, bond_raw, retrieved_at, start, end):
+    """Same dates required; never inner-join away observations or forward fill."""
+    e = import_europe_export(europe_raw, retrieved_at, start, end)
+    b = import_bond_export(bond_raw, retrieved_at, start, end)
+    if not e[2].equals(b[2]):
+        raise ValueError('Calendriers actions et obligations différents ; aucun alignement automatique.')
+    levels = pd.concat([e[0], b[0]], axis=1)
+    metadata = {**e[1], **b[1]}
+    report = validate_panel(levels, metadata, e[2])
+    report.update(sources={ISIN:e[3],BOND_ISIN:b[3]},
+        alignment='identical_nav_dates_required', independently_verified_calendar=False,
+        commercial_ready=False, method='two_issuer_exports_buy_and_hold')
+    return levels, metadata, e[2], report

@@ -125,3 +125,52 @@ reproduire exactement la même entrée. Les droits commerciaux restent non valid
 L'interface Explorer un historique accepte désormais cet export via un mode
 d'import dédié, en complément du CSV accompagné de son manifeste. Aucun appel
 réseau automatique n'est ajouté à l'application.
+
+## Actions–obligations : contrôle 2022
+
+L'export officiel du produit 291770 permet de lire la part IE00BDBRDM35, EUR Hedged
+Acc. La devise USD du fonds et celle de son indicateur ne sont pas celles de la
+part utilisée. L'adaptateur vérifie ISIN, devise EUR, capitalisation et identité
+de la colonne fonds ; la colonne de l'indice n'entre pas dans le calcul.
+
+Le fichier de 25,5 Mo contient un caractère `&` non échappé dans un commentaire
+sur les notations, hors des trois feuilles utilisées. L'adaptateur borne l'entrée
+à 32 Mo et ne parse que Key Facts, Historical NAVs et Growth of Hypothetical
+10,000. Il ne répare aucun chiffre et ne déclare pas le classeur entier valide.
+Les erreurs XML dans les feuilles utilisées bloquent toujours l'import. Les
+compositions et notations de cet export ne sont pas validées par ce traitement.
+
+L'année 2025 est refusée : la courbe obligataire n'a pas d'observation pour les
+VL des 4 juin et 19 décembre 2025. Aucune interpolation ni suppression de ces
+VL n'a été autorisée. Le rapport conserve ce refus. Le contrôle 2022 est une
+période distincte explicitement choisie après cette découverte, pas une fenêtre
+optimisée pour obtenir une meilleure performance.
+
+Du 31/12/2021 au 30/12/2022, les deux séries ont exactement 251 dates de VL communes.
+Ces bornes correspondent à celles retenues pour rapprocher l'année civile 2022.
+Le rendement actions de -9,245 % concorde avec -9,2 % publié et le rendement
+obligataire de -13,639 % avec -13,6 %, dans la précision de publication. Le
+calendrier reste une vérification interne aux exports d'un même émetteur.
+
+L'exemple de calcul à poids initiaux 60 % actions Europe / 40 % obligations produit
+-11,003 % sur la période et une baisse maximale entre observations de -16,863 %.
+Les poids dérivent avec les marchés : aucune remise à 60/40 n'est effectuée.
+Ce choix est un exemple technique, sans optimisation ni adaptation à un profil.
+Il ne représente pas une allocation mondiale complète ou une protection du capital.
+
+Rapport : `data/research/multi_asset_2022_check.json`. Reproduction locale :
+
+```bash
+python -m scripts.check_multi_asset .local-data/ishares_europe.xls \
+  .local-data/ishares_bonds.xls --retrieved-at 2026-09-23 \
+  --output .local-data/multi_asset_2022.json
+```
+
+L'URL de chaque export et son empreinte sont conservées dans le rapport. Indiquer
+la date effective en cas de nouveau téléchargement. Le mode « Actions et
+obligations iShares » accepte les deux exports dans l'interface ; les poids sont
+saisis par l'utilisateur, sans préallocation 60/40. Les calendriers doivent être
+strictement égaux : aucune jointure qui masquerait des dates manquantes.
+Pas de versements, de rééquilibrage, de frais de transaction ni de fiscalité.
+Pas de validation indépendante ni de droits commerciaux acquis. Les fichiers
+bruts sont conservés localement hors Git, sans flux automatique en production.

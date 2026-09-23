@@ -49,9 +49,16 @@
       "source_url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
       "checked_on": "2026-09-22",
       "annual_observations": 8,
-      "daily_history": "not_retrieved",
+      "daily_history": "retrieved_research_2022_checked_2025_rejected",
       "commercial_rights": "not_assessed",
-      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture. Part EUR couverte ; comparateur publié en USD. Ne pas comparer directement ces deux séries."
+      "findings": "Table annuelle lisible. Historique quotidien non récupéré ; export Download tenté sur World, échec de lecture. Part EUR couverte ; comparateur publié en USD. Ne pas comparer directement ces deux séries.",
+      "additional_sources": [
+        {
+          "url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
+          "checked_on": "2026-09-23",
+          "finding": "Export XML récupéré : part EUR contrôlée sur 251 dates en 2022. Courbe absente aux dates VL 2025-06-04 et 2025-12-19 ; année 2025 refusée. Commentaire XML invalide hors feuilles utilisées, voir rapport multi_asset_2022_check.json."
+        }
+      ]
     },
     {
       "isin": "FR001400U5Q4",

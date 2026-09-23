@@ -75,3 +75,76 @@ with patch('streamlit.file_uploader', return_value=BytesIO(%r)):
     app.button[0].click().run()
     assert not app.exception
     assert app.metric[0].value == '-1.00%'
+
+
+def bond_fixture():
+    from core.ishares_import import BOND_ISIN, BOND_NAME
+    return (fixture().replace(ISIN.encode(), BOND_ISIN.encode())
+            .replace(NAME.encode(), BOND_NAME.encode())
+            .replace(b'Inception Date', b'Share Class Launch Date')
+            .replace(b'>99<', b'>110<').replace(b'>90<', b'>105<'))
+
+
+def test_two_assets_buy_and_hold_without_rebalance():
+    from core.ishares_import import import_multi_asset_exports, BOND_ISIN
+    l,m,c,r=import_multi_asset_exports(fixture(),bond_fixture(),'2026-09-23','2024-12-31','2025-01-03')
+    curve,_=buy_and_hold(l,{ISIN:.6,BOND_ISIN:.4},m,c)
+    assert curve.iloc[-1]==pytest.approx(1.034)
+    assert path_metrics(curve)['max_drawdown']==pytest.approx(-.04)
+    assert len(r['sources'])==2
+    assert r['alignment']=='identical_nav_dates_required'
+
+
+def test_calendar_difference_blocks_instead_of_inner_join():
+    from xml.etree.ElementTree import fromstring
+    from core.ishares_import import import_multi_asset_exports
+    root=fromstring(bond_fixture())
+    for table in root.findall(f'{{{NS}}}Worksheet/{{{NS}}}Table'):
+        for row in list(table):
+            values=[d.text for d in row.findall(f'{{{NS}}}Cell/{{{NS}}}Data')]
+            if '02/Jan/2025' in values or 'Thu, 02 Jan 2025' in values:
+                table.remove(row)
+    with pytest.raises(ValueError,match='Calendriers'):
+        import_multi_asset_exports(fixture(),tostring(root),'2026-09-23','2024-12-31','2025-01-03')
+
+
+def test_malformed_unrelated_comment_not_treated_as_valid_workbook():
+    raw=fixture().replace(b'</ns0:Workbook>',b'<ns0:Worksheet ns0:Name="Holdings"><ns0:Table>S&P</ns0:Table></ns0:Worksheet></ns0:Workbook>')
+    _,_,_,r=run(raw)
+    assert not r['whole_workbook_validated']
+    assert 'Holdings' not in r['parsed_sections']
+    # A malformed value in a used worksheet must still fail.
+    with pytest.raises(ValueError):run(fixture().replace(b'>99<',b'>S&P<'))
+
+
+def test_swapped_files_rejected():
+    from core.ishares_import import import_multi_asset_exports
+    with pytest.raises(ValueError,match='Part'):
+        import_multi_asset_exports(bond_fixture(),fixture(),'2026-09-23','2024-12-31','2025-01-03')
+
+
+def test_multi_asset_upload_screen():
+    from pathlib import Path
+    from datetime import date
+    from streamlit.testing.v1 import AppTest
+    root=Path(__file__).resolve().parents[1]
+    script='''
+from pathlib import Path
+from io import BytesIO
+from unittest.mock import patch
+root=Path(%r)
+def upload(label, **kwargs):
+    return BytesIO(%r if label == 'Fichier obligations' else %r)
+with patch('streamlit.file_uploader', side_effect=upload):
+    exec(compile((root/'pages/backtest.py').read_text(),str(root/'pages/backtest.py'),'exec'),
+         {'__file__':str(root/'pages/backtest.py')})
+''' % (str(root),bond_fixture(),fixture())
+    app=AppTest.from_string(script).run()
+    app.radio[0].set_value('Actions et obligations iShares').run()
+    app.date_input[0].set_value(date(2024,12,31))
+    app.date_input[1].set_value(date(2025,1,3)).run()
+    app.number_input[0].set_value(60)
+    app.number_input[1].set_value(40)
+    app.button[0].click().run()
+    assert not app.exception
+    assert app.metric[0].value=='3.40%'

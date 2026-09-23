@@ -4,7 +4,7 @@ from pathlib import Path
 import streamlit as st
 from core.history_import import import_history
 from core.history import buy_and_hold, path_metrics
-from core.ishares_import import import_europe_export, SOURCE_URL
+from core.ishares_import import import_europe_export, import_multi_asset_exports, SOURCE_URL, BOND_SOURCE_URL
 
 st.title("Explorer un historique")
 st.write("Comparez une allocation initiale conservée sur une période passée, à partir de séries de rendement total net en euros.")
@@ -15,7 +15,7 @@ with st.expander("Préparer mes données"):
     for name in ["synthetic_history.csv", "synthetic_manifest.json"]:
         st.download_button("Télécharger " + name, (example / name).read_bytes(), file_name=name)
     st.caption("Ces fichiers sont entièrement synthétiques : ils expliquent le format et ne décrivent aucun placement réel.")
-mode = st.radio("Format de données", ["CSV et manifeste", "Export officiel iShares Europe"])
+mode = st.radio("Format de données", ["CSV et manifeste", "Export officiel iShares Europe", "Actions et obligations iShares"])
 try:
     if mode == "CSV et manifeste":
         csv_file = st.file_uploader("Historique CSV", type="csv")
@@ -23,7 +23,7 @@ try:
         if csv_file is None or manifest_file is None:
             st.stop()
         levels, metadata, calendar, report = import_history(csv_file.getvalue(), manifest_file.getvalue())
-    else:
+    elif mode == "Export officiel iShares Europe":
         st.write("Import dédié à iShares Core MSCI Europe EUR Acc (IE00B4K48X80). Utilisez le fichier du bouton Download de l’émetteur, au format XML avec extension .xls.")
         st.link_button("Ouvrir l’export de l’émetteur", SOURCE_URL)
         issuer_file = st.file_uploader("Export iShares", type=["xls", "xml"])
@@ -34,6 +34,21 @@ try:
         levels, metadata, calendar, report = import_europe_export(issuer_file.getvalue(), date.today().isoformat(), start, end)
         st.warning("Le calendrier est rapproché de la feuille des valeurs liquidatives du même émetteur. Il n’est pas vérifié auprès d’une source indépendante. Les droits commerciaux restent non validés.")
         with st.expander("Contrôles de l’export"):
+            st.json(report)
+    else:
+        st.write("Associez l’ETF actions Europe EUR Acc et l’ETF Global Aggregate EUR Hedged Acc. Les dates doivent être identiques, sans interpolation ni suppression automatique.")
+        st.link_button("Export actions Europe", SOURCE_URL)
+        st.link_button("Export obligations couvertes EUR", BOND_SOURCE_URL)
+        europe_file = st.file_uploader("Fichier actions Europe", type=["xls", "xml"])
+        bond_file = st.file_uploader("Fichier obligations", type=["xls", "xml"])
+        start = st.date_input("Date initiale exacte", date(2021, 12, 31))
+        end = st.date_input("Date finale exacte", date(2022, 12, 30))
+        st.caption("2022 est la première période contrôlée pour cette paire. L’export obligataire consulté comporte des lacunes en 2025 : ce calcul doit être refusé tant qu’elles ne sont pas résolues.")
+        if europe_file is None or bond_file is None:
+            st.stop()
+        levels, metadata, calendar, report = import_multi_asset_exports(europe_file.getvalue(), bond_file.getvalue(), date.today().isoformat(), start, end)
+        st.warning("Calendriers issus des exports du même émetteur, non vérifiés indépendamment. Les droits commerciaux restent non validés. Ces deux supports ne constituent pas un portefeuille modèle recommandé.")
+        with st.expander("Contrôles des deux exports"):
             st.json(report)
 except ValueError as exc:
     st.error(f"Import refusé : {exc}")
