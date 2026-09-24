@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "conflicts": [
+    {
+      "isin": "FR0000121014",
+      "field": "2025_interim_dividend_payment_date",
+      "detected_on": "2026-09-22",
+      "claims": [
+        {
+          "source_url": "https://www.lvmh.com/investors/lvmh_share",
+          "value": "2026-12-04"
+        },
+        {
+          "source_url": "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse",
+          "value": "2025-12-04"
+        },
+        {
+          "source_url": "https://www.lvmh.com/fr/publications/dividende-2025",
+          "value": "2025-12-04",
+          "published_on": "2026-04-23"
+        }
+      ],
+      "selected_value": "2025-12-04",
+      "resolution": "Communiqué daté concordant avec la page française ; version anglaise divergente exclue pour ce champ. Vérification documentaire interne à un même émetteur, non indépendante.",
+      "upstream_correction_verified": false
+    }
+  ]
+}

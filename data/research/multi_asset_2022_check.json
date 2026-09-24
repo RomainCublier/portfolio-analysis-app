@@ -1,0 +1,133 @@
+{
+  "start": "2021-12-31",
+  "end": "2022-12-30",
+  "observations": 251,
+  "currency": "EUR",
+  "origins": {
+    "IE00B4K48X80": "fund",
+    "IE00BDBRDM35": "fund"
+  },
+  "normalized_sha256": "258b3f910162eff7e59a4e6c7eca400a8e609d3123fc4713047dd413eb86badf",
+  "sources": {
+    "IE00B4K48X80": {
+      "start": "2021-12-31",
+      "end": "2022-12-30",
+      "observations": 251,
+      "currency": "EUR",
+      "origins": {
+        "IE00B4K48X80": "fund"
+      },
+      "normalized_sha256": "edef82a25f5f0f1328351f64c940c6fc97283aa7aa762d69256ab76d578c4275",
+      "source_url": "https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&portfolioId=251861&targetSite=ishares-uk&userType=individual",
+      "raw_sha256": "f7910e6dae939e2a0f34f76efd85e1838fc882327dc03acf30b8e1af9a427877",
+      "parsed_sections": [
+        "Growth of Hypothetical 10,000",
+        "Historical NAVs",
+        "Key Facts"
+      ],
+      "whole_workbook_validated": false,
+      "calendar_basis": "Dates de la feuille Historical NAVs du même export émetteur",
+      "independently_verified_calendar": false,
+      "excluded_flat_non_nav_dates": [
+        "2022-01-03",
+        "2022-04-15",
+        "2022-04-18",
+        "2022-05-02",
+        "2022-06-02",
+        "2022-06-03",
+        "2022-08-29",
+        "2022-09-19",
+        "2022-12-26",
+        "2022-12-27"
+      ],
+      "commercial_ready": false,
+      "ignored_benchmark_only_rows": 1,
+      "method": "issuer_growth_on_nav_dates_v1",
+      "return_basis_note": "Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction."
+    },
+    "IE00BDBRDM35": {
+      "start": "2021-12-31",
+      "end": "2022-12-30",
+      "observations": 251,
+      "currency": "EUR",
+      "origins": {
+        "IE00BDBRDM35": "fund"
+      },
+      "normalized_sha256": "596d94248ae6f222a425c5f6832498d0b06003f11bab8a63f820277be7403195",
+      "source_url": "https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&portfolioId=291770&targetSite=ishares-uk&userType=individual",
+      "raw_sha256": "7fb0b96f5c8ec6bb63166cbd67733ff287f30576e4a4bceaf08b290d6c24fd9a",
+      "parsed_sections": [
+        "Growth of Hypothetical 10,000",
+        "Historical NAVs",
+        "Key Facts"
+      ],
+      "whole_workbook_validated": false,
+      "calendar_basis": "Dates de la feuille Historical NAVs du même export émetteur",
+      "independently_verified_calendar": false,
+      "excluded_flat_non_nav_dates": [
+        "2022-01-03",
+        "2022-04-15",
+        "2022-04-18",
+        "2022-05-02",
+        "2022-06-02",
+        "2022-06-03",
+        "2022-08-29",
+        "2022-09-19",
+        "2022-12-26",
+        "2022-12-27"
+      ],
+      "commercial_ready": false,
+      "ignored_benchmark_only_rows": 11,
+      "method": "issuer_growth_on_nav_dates_v1",
+      "return_basis_note": "Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction."
+    }
+  },
+  "alignment": "identical_nav_dates_required",
+  "independently_verified_calendar": false,
+  "commercial_ready": false,
+  "method": "two_issuer_exports_buy_and_hold",
+  "retrieved_at": "2026-09-23",
+  "weights": {
+    "IE00B4K48X80": 0.6,
+    "IE00BDBRDM35": 0.4
+  },
+  "metrics": {
+    "total_return": -0.110027027851747,
+    "cagr": -0.11038320303797766,
+    "max_drawdown": -0.1686335007132408
+  },
+  "final_weights": {
+    "IE00B4K48X80": 0.6118484850464022,
+    "IE00BDBRDM35": 0.3881515149535977
+  },
+  "annual_reconciliation": {
+    "IE00B4K48X80": {
+      "published_return_percent": -9.2,
+      "calculated_return_percent": -9.245230876474563,
+      "difference_percentage_points": -0.04523087647456414,
+      "rounding_tolerance_percentage_points": 0.05,
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251861",
+      "independent_source": false
+    },
+    "IE00BDBRDM35": {
+      "published_return_percent": -13.6,
+      "calculated_return_percent": -13.638910648224911,
+      "difference_percentage_points": -0.038910648224911526,
+      "rounding_tolerance_percentage_points": 0.05,
+      "source_url": "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf-fund",
+      "independent_source": false
+    }
+  },
+  "period_reason": "Période 2022 contrôlée après détection de lacunes en 2025 ; pas une sélection optimisant la performance.",
+  "limitations": [
+    "Exemple de calcul 60/40, pas une allocation personnalisée ou optimale.",
+    "Sans versements ni rééquilibrage, frais de transaction ou fiscalité.",
+    "VL et total return émetteur, pas des prix exécutables.",
+    "Validation limitée à cette période et ces parts. Calendrier non vérifié indépendamment.",
+    "Droits commerciaux non validés ; données brutes non publiées."
+  ],
+  "check_2025": {
+    "status": "rejected",
+    "reason": "Courbe absente sur certaines dates de VL : 2025-06-04, 2025-12-19"
+  }
+}
