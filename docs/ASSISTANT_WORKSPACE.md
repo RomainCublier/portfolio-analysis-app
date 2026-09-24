@@ -6,11 +6,11 @@ Le journal conserve une date de saisie et une note libre. Une revue peut se conc
 
 ## Conservation
 
-Le dossier JSON version 1 contient le projet, la dernière allocation examinée avec succès, le dernier état des positions (date, liquidités et lignes) et le journal. Les limites de concentration, historiques, hypothèses et résultats de backtest ne sont pas inclus. L’import remplace ces données après validation complète ; une erreur préserve l’état existant.
+Le dossier JSON version 2 contient le projet, la dernière allocation examinée avec succès, le dernier état des positions (date, liquidités et lignes) le journal, les valeurs totales datées et les apports/retraits. Les dossiers version 1 restent importables : leur seul état devient le premier point de suivi, sans flux supposé. Les limites de concentration, historiques de marché, hypothèses et résultats de backtest ne sont pas inclus. L’import remplace ces données après validation complète ; une erreur préserve l’état existant.
 
 Le fichier est en clair et contient des informations financières personnelles. Pas de compte utilisateur, base de données, chiffrement ou sauvegarde automatique. Aucune preuve d’authenticité des données importées n’est revendiquée.
 
-Contrôles : taille maximale, structure/version, clés dupliquées, ISIN et somme des poids, nombres finis et bornés, dates non futures, comptes PEA/CTO, longueur des notes et des libellés. Les supports absents du catalogue sont préservés et signalés dans la page allocation.
+Contrôles : taille maximale de 8 Mo, structure/version, clés dupliquées, ISIN et somme des poids, nombres finis et bornés, dates non futures, comptes PEA/CTO, longueur des notes et des libellés. Les supports absents du catalogue sont préservés et signalés dans la page allocation.
 
 ## Limites avant commercialisation
 

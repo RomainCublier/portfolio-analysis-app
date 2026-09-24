@@ -33,6 +33,7 @@ with right:
     else:
         st.info('Vous détenez déjà des investissements ? Renseignez leurs valorisations et leur date.')
     st.page_link('pages/positions_reelles.py', label='Renseigner ou actualiser mes positions', icon='📊')
+    st.page_link('pages/suivi.py', label='Suivre mes apports et mon évolution', icon='🗓️')
 
 st.subheader('Mon journal de décisions')
 st.write('Notez ce que vous avez vérifié, ce qui a changé dans votre situation ou les questions à approfondir. Une revue peut aussi se terminer sans opération.')
@@ -58,9 +59,9 @@ try:
     st.download_button('Télécharger mon dossier', export_dossier(st.session_state), 'mon-dossier-investisseur.json', 'application/json')
 except ValueError as exc:
     st.error(f'Export impossible : {exc}')
-st.caption('Inclus : projet, dernière allocation fictive enregistrée, dernier état des positions et journal. Les historiques importés, résultats de backtest et limites de concentration ne sont pas inclus.')
+st.caption('Inclus : projet, dernière allocation fictive enregistrée, dernier état des positions, historique des valeurs totales, apports/retraits et journal. Les historiques importés, résultats de backtest et limites de concentration ne sont pas inclus.')
 upload = st.file_uploader('Reprendre un dossier enregistré', type=['json'])
-st.caption('Le chargement remplace le projet, l’allocation, les positions et le journal de cette session.')
+st.caption('Le chargement remplace le projet, l’allocation, les positions, l’historique de suivi et le journal de cette session.')
 if st.button('Charger ce dossier', disabled=upload is None):
     try:
         restore_dossier(st.session_state, import_dossier(upload.getvalue()))

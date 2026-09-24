@@ -18,6 +18,7 @@ navigation = st.navigation(
         st.Page("pages/allocation.py", title="Tester une allocation", icon="⚖️"),
         st.Page("pages/backtest.py", title="Explorer un historique", icon="📈"),
         st.Page("pages/positions_reelles.py", title="Mon portefeuille réel", icon="📊"),
+        st.Page("pages/suivi.py", title="Suivre mon évolution", icon="🗓️"),
     ], "Laboratoire — fonctions expérimentales": [
         st.Page("pages/portefeuille.py",    title="Diagnostic expérimental",    icon="🧪"),
         st.Page("pages/analyse_actions.py", title="Analyse d'Actions",   icon="🔍"),
