@@ -5,7 +5,7 @@ from core.planning import Project, export_project, import_project, project_path
 
 st.title("Construire mon projet")
 st.write("Avancez à votre rythme : posez votre objectif, comprenez les chiffres et explorez vos possibilités.")
-st.caption("Première étape : votre projet et des scénarios de capital. La sélection de fonds et les backtests viendront ensuite.")
+st.caption("Première étape : votre projet et des scénarios de capital. Retrouvez ensuite le catalogue, les allocations fictives et les historiques dans le menu.")
 
 with st.expander("Reprendre un projet enregistré"):
     upload = st.file_uploader("Votre fichier projet (.json)", type="json")

@@ -7,14 +7,18 @@ from core.allocation import allocation_diagnostics
 st.title("Tester une allocation")
 st.write("Assemblez des supports et examinez leur répartition. Il s’agit d’un portefeuille fictif, distinct de vos positions réelles.")
 catalog = {r["isin"]: r for r in load_catalog()}
+missing = set(st.session_state.get("allocation_draft", {})) - set(catalog)
+if missing:
+    st.warning("Certains supports du dossier sont absents du catalogue actuel : " + ", ".join(sorted(missing)) + ". Ils restent dans le dossier jusqu’à l’enregistrement d’une nouvelle allocation.")
 selected = st.multiselect("Quels supports voulez-vous comparer ensemble ?", list(catalog),
+                          default=[k for k in st.session_state.get("allocation_draft", {}) if k in catalog],
                           format_func=lambda k: f"{catalog[k]['name']} — {k}")
 if not selected:
     st.info("Commencez par choisir des supports. Aucun portefeuille n’est présélectionné.")
     st.stop()
 weights = {}
 for key in selected:
-    weights[key] = st.number_input(f"Part de {catalog[key]['name']} (%)", min_value=0., max_value=100., value=0., step=1., key=f"allocation_{key}") / 100
+    weights[key] = st.number_input(f"Part de {catalog[key]['name']} (%)", min_value=0., max_value=100., value=float(st.session_state.get("allocation_draft", {}).get(key, 0) * 100), step=1., key=f"allocation_{key}") / 100
 st.caption(f"Total saisi : {sum(weights.values()):.1%}. Les poids ne sont pas ajustés automatiquement.")
 
 limits = {}

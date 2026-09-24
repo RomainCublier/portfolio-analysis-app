@@ -6,7 +6,8 @@ import streamlit as st
 st.title("Mon portefeuille réel")
 st.write("Renseignez uniquement les investissements que vous détenez. Retrouvez leur valeur actuelle dans votre espace courtier.")
 st.info("Cette première version photographie vos positions. Les transactions, la performance historique et les actualités personnalisées seront ajoutées ensuite.")
-snapshot_date = st.date_input("Date des valorisations", date.today(), max_value=date.today())
+previous = st.session_state.get("real_snapshot")
+snapshot_date = st.date_input("Date des valorisations", previous[2] if previous is not None else date.today(), max_value=date.today())
 st.caption("Saisissez toutes les valeurs en euros, y compris pour les titres cotés dans une autre devise. Utilisez la valorisation en euros de votre courtier à la date choisie.")
 empty = pd.DataFrame({"Compte": pd.Series(dtype=str), "Support / ISIN": pd.Series(dtype=str),
                       "Valeur actuelle (€)": pd.Series(dtype=float)})
@@ -14,8 +15,8 @@ positions = st.data_editor(st.session_state.get("real_positions", empty), num_ro
     column_config={"Compte": st.column_config.SelectboxColumn(options=["PEA", "CTO"], required=True),
                    "Support / ISIN": st.column_config.TextColumn(required=True),
                    "Valeur actuelle (€)": st.column_config.NumberColumn(min_value=0.0, required=True)},
-    use_container_width=True, key="real_positions_editor")
-cash = st.number_input("Liquidités totales disponibles sur ces comptes (€)", 0.0, 100_000_000.0, 0.0)
+    use_container_width=True, key=f"real_positions_editor_{st.session_state.get('positions_revision', 0)}")
+cash = st.number_input("Liquidités totales disponibles sur ces comptes (€)", 0.0, 100_000_000.0, float(previous[1]) if previous is not None else 0.0)
 st.caption("Les liquidités sont affichées séparément des supports détenus.")
 if st.button("Afficher mon état des positions", type="primary"):
     import numpy as np
@@ -23,13 +24,16 @@ if st.button("Afficher mon état des positions", type="primary"):
     values = pd.to_numeric(clean["Valeur actuelle (€)"], errors="coerce")
     labels = clean["Support / ISIN"].fillna("").astype(str).str.strip()
     if (clean["Compte"].isin(["PEA", "CTO"]).all() and labels.ne("").all()
-            and np.isfinite(values).all() and values.ge(0).all()):
+            and labels.str.len().le(200).all() and len(clean) <= 1000
+            and np.isfinite(values).all() and values.between(0, 100_000_000).all()):
         clean["Valeur actuelle (€)"] = values
         clean["Support / ISIN"] = labels
         st.session_state.real_snapshot = (clean, cash, snapshot_date)
+        st.session_state.real_positions = clean.copy()
+        st.session_state.positions_revision = st.session_state.get("positions_revision", 0) + 1
+        st.rerun()
     else:
-        st.session_state.pop("real_snapshot", None)
-        st.error("Complétez chaque ligne : compte, support et valeur positive ou nulle en euros.")
+        st.error("Complétez chaque ligne : compte, support (200 caractères maximum) et valeur entre 0 et 100 millions d’euros. Maximum : 1 000 lignes.")
 if "real_snapshot" in st.session_state:
     saved, saved_cash, saved_date = st.session_state.real_snapshot
     total = saved["Valeur actuelle (€)"].sum() + saved_cash

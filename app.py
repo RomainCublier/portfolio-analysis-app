@@ -12,7 +12,8 @@ st.markdown(CSS, unsafe_allow_html=True)
 
 navigation = st.navigation(
     {"Mon espace": [
-        st.Page("pages/commencer.py", title="Construire mon projet", icon="🌱", default=True),
+        st.Page("pages/assistant.py", title="Mon assistant", icon="🧭", default=True),
+        st.Page("pages/commencer.py", title="Construire mon projet", icon="🌱"),
         st.Page("pages/catalogue.py", title="Explorer les supports", icon="🔎"),
         st.Page("pages/allocation.py", title="Tester une allocation", icon="⚖️"),
         st.Page("pages/backtest.py", title="Explorer un historique", icon="📈"),
