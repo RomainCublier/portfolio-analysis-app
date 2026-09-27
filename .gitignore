@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .claude/
+.local-data/
+.venv/
+.streamlit/secrets.toml
+*.sqlite3
+*.sqlite3-*

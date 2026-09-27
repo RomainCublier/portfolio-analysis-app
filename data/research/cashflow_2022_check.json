@@ -1,0 +1,225 @@
+{
+  "purpose": "Exemple technique : 10 000 EUR initiaux, 1 000 EUR par mois observé, poids cibles 60/40. Pas un profil conseillé.",
+  "retrieved_at": "2026-09-23",
+  "provenance": {
+    "start": "2021-12-31",
+    "end": "2022-12-30",
+    "observations": 251,
+    "currency": "EUR",
+    "origins": {
+      "IE00B4K48X80": "fund",
+      "IE00BDBRDM35": "fund"
+    },
+    "normalized_sha256": "258b3f910162eff7e59a4e6c7eca400a8e609d3123fc4713047dd413eb86badf",
+    "sources": {
+      "IE00B4K48X80": {
+        "start": "2021-12-31",
+        "end": "2022-12-30",
+        "observations": 251,
+        "currency": "EUR",
+        "origins": {
+          "IE00B4K48X80": "fund"
+        },
+        "normalized_sha256": "edef82a25f5f0f1328351f64c940c6fc97283aa7aa762d69256ab76d578c4275",
+        "source_url": "https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&portfolioId=251861&targetSite=ishares-uk&userType=individual",
+        "raw_sha256": "f7910e6dae939e2a0f34f76efd85e1838fc882327dc03acf30b8e1af9a427877",
+        "parsed_sections": [
+          "Growth of Hypothetical 10,000",
+          "Historical NAVs",
+          "Key Facts"
+        ],
+        "whole_workbook_validated": false,
+        "calendar_basis": "Dates de la feuille Historical NAVs du même export émetteur",
+        "independently_verified_calendar": false,
+        "excluded_flat_non_nav_dates": [
+          "2022-01-03",
+          "2022-04-15",
+          "2022-04-18",
+          "2022-05-02",
+          "2022-06-02",
+          "2022-06-03",
+          "2022-08-29",
+          "2022-09-19",
+          "2022-12-26",
+          "2022-12-27"
+        ],
+        "commercial_ready": false,
+        "ignored_benchmark_only_rows": 1,
+        "method": "issuer_growth_on_nav_dates_v1",
+        "return_basis_note": "Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction."
+      },
+      "IE00BDBRDM35": {
+        "start": "2021-12-31",
+        "end": "2022-12-30",
+        "observations": 251,
+        "currency": "EUR",
+        "origins": {
+          "IE00BDBRDM35": "fund"
+        },
+        "normalized_sha256": "596d94248ae6f222a425c5f6832498d0b06003f11bab8a63f820277be7403195",
+        "source_url": "https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&portfolioId=291770&targetSite=ishares-uk&userType=individual",
+        "raw_sha256": "7fb0b96f5c8ec6bb63166cbd67733ff287f30576e4a4bceaf08b290d6c24fd9a",
+        "parsed_sections": [
+          "Growth of Hypothetical 10,000",
+          "Historical NAVs",
+          "Key Facts"
+        ],
+        "whole_workbook_validated": false,
+        "calendar_basis": "Dates de la feuille Historical NAVs du même export émetteur",
+        "independently_verified_calendar": false,
+        "excluded_flat_non_nav_dates": [
+          "2022-01-03",
+          "2022-04-15",
+          "2022-04-18",
+          "2022-05-02",
+          "2022-06-02",
+          "2022-06-03",
+          "2022-08-29",
+          "2022-09-19",
+          "2022-12-26",
+          "2022-12-27"
+        ],
+        "commercial_ready": false,
+        "ignored_benchmark_only_rows": 11,
+        "method": "issuer_growth_on_nav_dates_v1",
+        "return_basis_note": "Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction."
+      }
+    },
+    "alignment": "identical_nav_dates_required",
+    "independently_verified_calendar": false,
+    "commercial_ready": false,
+    "method": "two_issuer_exports_buy_and_hold"
+  },
+  "scenarios": {
+    "no_rebalance": {
+      "start": "2021-12-31",
+      "end": "2022-12-30",
+      "observations": 251,
+      "currency": "EUR",
+      "origins": {
+        "IE00B4K48X80": "fund",
+        "IE00BDBRDM35": "fund"
+      },
+      "normalized_sha256": "258b3f910162eff7e59a4e6c7eca400a8e609d3123fc4713047dd413eb86badf",
+      "method": "end_of_observation_contributions_v1",
+      "commercial_ready": false,
+      "initial_capital": 10000.0,
+      "weights": {
+        "IE00B4K48X80": 0.6,
+        "IE00BDBRDM35": 0.4
+      },
+      "contributions": {
+        "2022-01-31": 1000.0,
+        "2022-02-28": 1000.0,
+        "2022-03-31": 1000.0,
+        "2022-04-29": 1000.0,
+        "2022-05-31": 1000.0,
+        "2022-06-30": 1000.0,
+        "2022-07-29": 1000.0,
+        "2022-08-31": 1000.0,
+        "2022-09-30": 1000.0,
+        "2022-10-31": 1000.0,
+        "2022-11-30": 1000.0,
+        "2022-12-30": 1000.0
+      },
+      "rebalance_dates": [],
+      "event_order": [
+        "market_return",
+        "contribution_at_target_weights",
+        "optional_rebalance_to_target"
+      ],
+      "contribution_total": 12000.0,
+      "capital_paid": 22000.0,
+      "final_value": 20628.1129551434,
+      "gain_loss": -1371.8870448566013,
+      "time_weighted_metrics": {
+        "total_return": -0.1098715343729475,
+        "cagr": -0.11022723798112355,
+        "max_drawdown": -0.16860278640225446
+      },
+      "final_weights": {
+        "IE00B4K48X80": 0.6112985962570171,
+        "IE00BDBRDM35": 0.38870140374298284
+      },
+      "limitations": [
+        "Unités fractionnaires de rendement total, pas des ordres exécutables.",
+        "Sans retraits, fiscalité, spread, courtage ni délais de règlement.",
+        "Frais des fonds déjà incorporés ; aucune seconde déduction.",
+        "La performance TWR neutralise les apports ; ce n’est pas le TRI personnel.",
+        "Pas de revendication de conformité ou certification GIPS."
+      ]
+    },
+    "monthly_rebalance": {
+      "start": "2021-12-31",
+      "end": "2022-12-30",
+      "observations": 251,
+      "currency": "EUR",
+      "origins": {
+        "IE00B4K48X80": "fund",
+        "IE00BDBRDM35": "fund"
+      },
+      "normalized_sha256": "258b3f910162eff7e59a4e6c7eca400a8e609d3123fc4713047dd413eb86badf",
+      "method": "end_of_observation_contributions_v1",
+      "commercial_ready": false,
+      "initial_capital": 10000.0,
+      "weights": {
+        "IE00B4K48X80": 0.6,
+        "IE00BDBRDM35": 0.4
+      },
+      "contributions": {
+        "2022-01-31": 1000.0,
+        "2022-02-28": 1000.0,
+        "2022-03-31": 1000.0,
+        "2022-04-29": 1000.0,
+        "2022-05-31": 1000.0,
+        "2022-06-30": 1000.0,
+        "2022-07-29": 1000.0,
+        "2022-08-31": 1000.0,
+        "2022-09-30": 1000.0,
+        "2022-10-31": 1000.0,
+        "2022-11-30": 1000.0,
+        "2022-12-30": 1000.0
+      },
+      "rebalance_dates": [
+        "2022-01-31",
+        "2022-02-28",
+        "2022-03-31",
+        "2022-04-29",
+        "2022-05-31",
+        "2022-06-30",
+        "2022-07-29",
+        "2022-08-31",
+        "2022-09-30",
+        "2022-10-31",
+        "2022-11-30",
+        "2022-12-30"
+      ],
+      "event_order": [
+        "market_return",
+        "contribution_at_target_weights",
+        "optional_rebalance_to_target"
+      ],
+      "contribution_total": 12000.0,
+      "capital_paid": 22000.0,
+      "final_value": 20651.90528530097,
+      "gain_loss": -1348.0947146990293,
+      "time_weighted_metrics": {
+        "total_return": -0.10850394600904523,
+        "cagr": -0.10885549798950123,
+        "max_drawdown": -0.16786981521354738
+      },
+      "final_weights": {
+        "IE00B4K48X80": 0.6,
+        "IE00BDBRDM35": 0.4
+      },
+      "limitations": [
+        "Unités fractionnaires de rendement total, pas des ordres exécutables.",
+        "Sans retraits, fiscalité, spread, courtage ni délais de règlement.",
+        "Frais des fonds déjà incorporés ; aucune seconde déduction.",
+        "La performance TWR neutralise les apports ; ce n’est pas le TRI personnel.",
+        "Pas de revendication de conformité ou certification GIPS."
+      ]
+    }
+  },
+  "schedule_policy": "Dernier point observé du mois après le mois initial ; décembre 2022 inclus au dernier point."
+}

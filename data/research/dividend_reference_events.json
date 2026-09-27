@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "scope": "Partiel : exercices 2023–2025 uniquement. Le total annuel fiscal ne doit pas être additionné une seconde fois aux versements.",
+  "events": [
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2023,
+      "event_type": "interim",
+      "gross_amount_per_share": 5.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2023-12-01",
+      "payment_date": "2023-12-06",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    },
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2023,
+      "event_type": "final",
+      "gross_amount_per_share": 7.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2024-04-22",
+      "payment_date": "2024-04-25",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    },
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2024,
+      "event_type": "interim",
+      "gross_amount_per_share": 5.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2024-11-29",
+      "payment_date": "2024-12-04",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    },
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2024,
+      "event_type": "final",
+      "gross_amount_per_share": 7.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2025-04-23",
+      "payment_date": "2025-04-28",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    },
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2025,
+      "event_type": "interim",
+      "gross_amount_per_share": 5.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2025-12-01",
+      "payment_date": "2025-12-04",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse",
+        "https://www.lvmh.com/fr/publications/dividende-2025"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    },
+    {
+      "isin": "FR0000121014",
+      "fiscal_year": 2025,
+      "event_type": "final",
+      "gross_amount_per_share": 7.5,
+      "currency": "EUR",
+      "last_cum_dividend_date": "2026-04-27",
+      "payment_date": "2026-04-30",
+      "ex_dividend_date": null,
+      "record_date": null,
+      "source_urls": [
+        "https://www.lvmh.com/fr/actionnaires/lvmh_en_bourse",
+        "https://www.lvmh.com/fr/publications/dividende-2025"
+      ],
+      "retrieved_on": "2026-09-22",
+      "independent_cross_check": false,
+      "commercial_rights": "not_assessed",
+      "return_adjustment_ready": false
+    }
+  ]
+}

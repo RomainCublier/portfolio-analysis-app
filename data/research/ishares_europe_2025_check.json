@@ -1,0 +1,56 @@
+{
+  "start": "2024-12-31",
+  "end": "2025-12-31",
+  "observations": 254,
+  "currency": "EUR",
+  "origins": {
+    "IE00B4K48X80": "fund"
+  },
+  "normalized_sha256": "4046adb5bb400fbf7003cdf742cd9b2c25a5b35c6154d9fc877b1f3842e35c6e",
+  "source_url": "https://www.blackrock.com/varnish-api/uk-retail01-product-data/product-data/api/v1/get-fund-document?appSubType=ISHARES&appType=PRODUCT_PAGE&component=fundDownloadV2&locale=en_GB&portfolioId=251861&targetSite=ishares-uk&userType=individual",
+  "raw_sha256": "f7910e6dae939e2a0f34f76efd85e1838fc882327dc03acf30b8e1af9a427877",
+  "calendar_basis": "Dates de la feuille Historical NAVs du même export émetteur",
+  "independently_verified_calendar": false,
+  "excluded_flat_non_nav_dates": [
+    "2025-01-01",
+    "2025-04-18",
+    "2025-04-21",
+    "2025-05-05",
+    "2025-05-26",
+    "2025-08-25",
+    "2025-12-25",
+    "2025-12-26"
+  ],
+  "commercial_ready": false,
+  "ignored_benchmark_only_rows": 1,
+  "method": "issuer_growth_on_nav_dates_v1",
+  "return_basis_note": "Courbe de rendement total émetteur ; frais du fonds incorporés. Pas un cours de transaction.",
+  "retrieved_at": "2026-09-23",
+  "isin": "IE00B4K48X80",
+  "weights": {
+    "IE00B4K48X80": 1.0
+  },
+  "backtest_method": "buy_and_hold_no_flows_v1",
+  "metrics": {
+    "total_return": 0.1971524660185784,
+    "cagr": 0.19730002480252185,
+    "max_drawdown": -0.16254435894958463
+  },
+  "reconciliation": {
+    "year": 2025,
+    "published_return_percent": 19.7,
+    "calculated_return_percent": 19.71524660185784,
+    "difference_percentage_points": 0.015246601857839437,
+    "rounding_tolerance_percentage_points": 0.05,
+    "within_published_rounding": true,
+    "reference_source_url": "https://www.ishares.com/uk/individual/en/products/251861",
+    "independent_source": false
+  },
+  "limitations": [
+    "Un seul ETF, une année ; aucune validation de stratégie ou allocation.",
+    "Calendrier issu du même export ; aucun contrôle externe de complétude.",
+    "Rendement total émetteur : pas un prix auquel tous les ordres auraient été exécutés.",
+    "Sans versements, rééquilibrage, courtage, spread ou fiscalité.",
+    "Droits commerciaux non validés. Export source conservé localement, non publié dans Git."
+  ]
+}
