@@ -1,7 +1,7 @@
 """Fact-based session overview. No generated advice or background agent."""
 from datetime import date
 import streamlit as st
-from core.journey import next_step
+from core.journey import journey_progress, next_step
 
 st.title('Mon assistant')
 st.write('Retrouvez votre projet, vos essais et vos positions. Faites le point à votre rythme et gardez une trace de vos décisions.')
@@ -11,6 +11,23 @@ project = st.session_state.get('project')
 allocation = st.session_state.get('allocation_draft', {})
 snapshot = st.session_state.get('real_snapshot')
 step = next_step(project, allocation, snapshot)
+progress = journey_progress(project, allocation, snapshot)
+
+st.subheader('Votre parcours')
+st.progress(progress.completed / 3, text=f'{progress.completed} étape(s) sur 3 enregistrée(s) dans cette session')
+for column, label, complete, page, action in zip(
+    st.columns(3),
+    ('1. Définir mon projet', '2. Tester une répartition', '3. Suivre mon portefeuille'),
+    (progress.project, progress.allocation, progress.portfolio),
+    ('pages/commencer.py', 'pages/modeles.py', 'pages/positions_reelles.py'),
+    ('Commencer', 'Explorer', 'Renseigner'),
+):
+    with column:
+        st.markdown(f"**{'✓' if complete else '○'} {label}**")
+        st.caption('Étape enregistrée' if complete else 'À faire quand vous êtes prêt')
+        st.page_link(page, label='Revoir' if complete else action)
+
+st.caption('À faire ensuite')
 st.subheader(step.title)
 st.write(step.description)
 st.page_link(step.page, label=step.action)

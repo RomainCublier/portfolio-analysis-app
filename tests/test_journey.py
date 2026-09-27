@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from core.journey import next_step
+from core.journey import journey_progress, next_step
 from core.planning import Project
 
 
@@ -16,6 +16,16 @@ from core.planning import Project
 ])
 def test_next_step_uses_saved_work(project, allocation, snapshot, page):
     assert next_step(project, allocation, snapshot).page == page
+
+
+@pytest.mark.parametrize("project,allocation,snapshot,completed", [
+    (None, None, None, 0),
+    (Project(), {}, None, 1),
+    (Project(), {"example": 100}, None, 2),
+    (Project(), {"example": 100}, ([], 0, None), 3),
+])
+def test_journey_progress_counts_only_saved_milestones(project, allocation, snapshot, completed):
+    assert journey_progress(project, allocation, snapshot).completed == completed
 
 
 def test_home_hides_internal_lab_by_default():

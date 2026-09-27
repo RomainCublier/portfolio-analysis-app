@@ -11,6 +11,26 @@ class NextStep:
     action: str
 
 
+@dataclass(frozen=True)
+class JourneyProgress:
+    project: bool
+    allocation: bool
+    portfolio: bool
+
+    @property
+    def completed(self):
+        return sum((self.project, self.allocation, self.portfolio))
+
+
+def journey_progress(project=None, allocation=None, snapshot=None):
+    """Return only milestones backed by work explicitly saved in the session."""
+    return JourneyProgress(
+        project=project is not None,
+        allocation=bool(allocation),
+        portfolio=snapshot is not None,
+    )
+
+
 def next_step(project=None, allocation=None, snapshot=None):
     if snapshot is not None:
         return NextStep(
