@@ -1,6 +1,7 @@
 """Beginner entry point, independent of legacy market-data calculations."""
 import pandas as pd
 import streamlit as st
+from streamlit.errors import StreamlitPageNotFoundError
 from core.planning import Project, export_project, import_project, project_path
 
 st.title("Construire mon projet")
@@ -46,6 +47,12 @@ if p.reserve != "Déjà disponible":
 if p.years <= 3 or p.loss_reaction == "J’aurais besoin de récupérer cet argent":
     st.info("La disponibilité de votre argent compte : une baisse peut durer au-delà de votre échéance. Une projection de rendement ne garantit pas de retrouver votre capital.")
 st.caption("Ces réponses décrivent votre projet ; elles ne déterminent pas encore une allocation ni un profil de risque complet.")
+if st.session_state.get('project'):
+    try:
+        st.page_link('pages/enveloppes.py', label='Continuer : comprendre le PEA et le CTO')
+        st.page_link('pages/modeles.py', label='Puis comparer des portefeuilles fictifs')
+    except StreamlitPageNotFoundError:
+        st.caption('Suite : Mon portefeuille fictif, dans le menu.')
 
 st.subheader("2. Comprendre l’effet du temps et des versements")
 st.write("Choisissez une hypothèse pour observer son effet. Aucun rendement n’est déduit de votre profil.")

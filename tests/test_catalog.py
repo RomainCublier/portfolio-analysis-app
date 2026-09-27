@@ -8,17 +8,18 @@ from core.catalog import load_catalog, review_status, valid_isin
 
 def test_catalog_provenance_and_unknowns():
     rows = load_catalog()
-    assert len(rows) == 10
+    assert len(rows) == 12
     assert all(valid_isin(r["isin"]) for r in rows)
-    assert sum(r["facts"]["fee_percent"] is not None for r in rows) == 9
-    assert [r["isin"] for r in rows if r["facts"]["pea"] is True] == ["FR001400U5Q4"]
-    assert all(r["market_data_status"] == "not_connected" for r in rows)
+    assert sum(r["facts"]["fee_percent"] is not None for r in rows) == 11
+    assert {r["isin"] for r in rows if r["facts"]["pea"] is True} == {"FR001400U5Q4", "IE0002XZSHO1"}
+    assert all(r["market_data_status"] in {"not_connected", "on_demand_research"} for r in rows)
     assert all(r["commercial_rights"] != "approved" for r in rows)
 
 
 def test_review_expiry_and_incomplete_are_not_verified():
     rows = load_catalog()
-    assert review_status(rows[0], date(2026, 9, 21)) == "Caractéristiques documentées"
+    world = next(r for r in rows if r['isin'] == 'IE00B4L5Y983')
+    assert review_status(world, date(2026, 9, 21)) == "Caractéristiques documentées"
     overnight = next(r for r in rows if r["isin"] == "LU0290358497")
     assert review_status(overnight, date(2026, 9, 22)) == "Caractéristiques documentées"
     incomplete = {**overnight, "facts": {**overnight["facts"], "fee_percent": None}}
@@ -39,11 +40,12 @@ def test_catalog_ui_filters_and_handles_no_results():
     root = Path(__file__).resolve().parents[1]
     app = AppTest.from_file(str(root / "pages/catalogue.py")).run()
     assert not app.exception
-    assert len(app.expander) == 10
+    assert len(app.expander) == len(load_catalog())
     app.checkbox[0].check().run()
     assert not app.exception
-    assert len(app.expander) == 1
-    assert "Amundi PEA Monde" in app.expander[0].label
+    assert len(app.expander) == 2
+    assert any("Amundi PEA Monde" in e.label for e in app.expander)
+    assert any("WPEA" in e.label for e in app.expander)
     app.text_input[0].set_value("introuvable").run()
     assert not app.exception
     assert len(app.expander) == 0

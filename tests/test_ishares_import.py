@@ -29,6 +29,20 @@ def fixture(currency='EUR', extra='100', missing=False, duplicate=False, bad_fun
 def run(raw):return import_europe_export(raw,'2026-09-23','2024-12-31','2025-01-03')
 
 
+def test_world_adapter_requires_exact_identity_and_base_currency():
+    from core.ishares_import import WORLD_ISIN, WORLD_NAME, import_world_export
+    raw = fixture().replace(ISIN.encode(), WORLD_ISIN.encode()).replace(NAME.encode(), WORLD_NAME.encode())
+    raw = raw.replace(b'Share Class Currency', b'Base Currency').replace(b'Inception Date', b'Fund Launch Date')
+    levels, metadata, _, report = import_world_export(raw, '2026-09-25', '2024-12-31', '2025-01-03')
+    assert list(levels) == [WORLD_ISIN]
+    assert metadata[WORLD_ISIN].currency == 'EUR'
+    assert not report['commercial_ready']
+    with pytest.raises(ValueError):
+        import_world_export(fixture(), '2026-09-25', '2024-12-31', '2025-01-03')
+    with pytest.raises(ValueError):
+        import_world_export(raw.replace(b'>EUR<', b'>USD<'), '2026-09-25', '2024-12-31', '2025-01-03')
+
+
 def test_research_import_and_first_loss_preserved():
     levels, metadata, calendar, report = run(fixture())
     curve,_ = buy_and_hold(levels,{ISIN:1.},metadata,calendar)

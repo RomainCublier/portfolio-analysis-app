@@ -9,6 +9,7 @@ from core.cashflow_backtest import simulate_contributions, monthly_observation_d
 from core.ishares_import import import_europe_export, import_multi_asset_exports, SOURCE_URL, BOND_SOURCE_URL
 
 st.title("Explorer un historique")
+st.warning("Import avancé réservé au laboratoire interne. Le parcours V1 utilise la comparaison guidée du portefeuille fictif.")
 st.write("Explorez une allocation sur une période passée, avec ou sans versements, à partir de séries de rendement total net en euros.")
 st.info("Version de recherche : aucun flux de marché n’est encore connecté. Les sources et les droits des fichiers importés restent à vérifier indépendamment.")
 with st.expander("Préparer mes données"):
@@ -53,9 +54,12 @@ try:
         with st.expander("Contrôles des deux exports"):
             st.json(report)
 except ValueError as exc:
+    st.session_state.pop('research_history', None)
     st.error(f"Import refusé : {exc}")
     st.stop()
 st.success(f"Contrôles techniques réussis : {len(levels)} observations, du {report['start']} au {report['end']}.")
+st.session_state['research_history'] = (levels.copy(), dict(metadata), calendar.copy(), dict(report))
+st.caption('Ces données sont aussi disponibles dans Mon portefeuille fictif pendant cette session, si les supports choisis correspondent.')
 st.caption("La complétude est contrôlée par rapport au calendrier fourni. L’authenticité des sources, les prix figés et la qualité économique des séries ne sont pas certifiés.")
 if any(m.origin != "fund" for m in metadata.values()):
     st.warning("Cet import contient un proxy ou des données synthétiques. Le résultat n’est pas un historique intégral de placements réels.")

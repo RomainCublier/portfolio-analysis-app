@@ -19,6 +19,9 @@ SOURCE_URL = ('https://www.blackrock.com/varnish-api/uk-retail01-product-data/pr
 BOND_ISIN = 'IE00BDBRDM35'
 BOND_NAME = 'iShares Core Global Aggregate Bond UCITS ETF'
 BOND_SOURCE_URL = SOURCE_URL.replace('portfolioId=251861', 'portfolioId=291770')
+WORLD_ISIN = 'IE00B441G979'
+WORLD_NAME = 'iShares MSCI World EUR Hedged UCITS ETF (Acc)'
+WORLD_SOURCE_URL = SOURCE_URL.replace('portfolioId=251861', 'portfolioId=251891')
 NS = 'urn:schemas-microsoft-com:office:spreadsheet'
 MONTHS = {m: i for i, m in enumerate(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], 1)}
 
@@ -48,7 +51,8 @@ def _number(value):
     return n
 
 
-def _sheets(raw):
+def _sheets(raw, selected_names=None):
+    selected_names = selected_names or {'Key Facts', 'Historical NAVs', 'Growth of Hypothetical 10,000'}
     if len(raw) > 32_000_000 or b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
         raise ValueError('Export trop volumineux ou XML non autorisé.')
     try:
@@ -66,7 +70,7 @@ def _sheets(raw):
         keep = []
         for block in blocks:
             name = re.search(rf'{prefix}:Name="([^"]+)"', block.split('>', 1)[0])
-            if name and name.group(1) in {'Key Facts', 'Historical NAVs', 'Growth of Hypothetical 10,000'}:
+            if name and name.group(1) in selected_names:
                 keep.append(block)
         root = ET.fromstring(opening.group(0) + ''.join(keep) + f'</{prefix}:Workbook>')
     except (ET.ParseError, UnicodeError) as exc:
@@ -101,7 +105,12 @@ def import_bond_export(raw, retrieved_at, start, end):
     return _import_export(raw, retrieved_at, start, end, BOND_ISIN, BOND_NAME, BOND_SOURCE_URL, 'Share Class Launch Date')
 
 
-def _import_export(raw, retrieved_at, start, end, isin, name, source_url, launch_field):
+def import_world_export(raw, retrieved_at, start, end):
+    return _import_export(raw, retrieved_at, start, end, WORLD_ISIN, WORLD_NAME,
+                          WORLD_SOURCE_URL, 'Fund Launch Date', 'Base Currency')
+
+
+def _import_export(raw, retrieved_at, start, end, isin, name, source_url, launch_field, currency_field='Share Class Currency'):
     sheets = _sheets(raw)
     required = {'Key Facts', 'Historical NAVs', 'Growth of Hypothetical 10,000'}
     if not required <= set(sheets):
@@ -112,7 +121,7 @@ def _import_export(raw, retrieved_at, start, end, isin, name, source_url, launch
             if row[0] in facts:
                 raise ValueError('Caractéristique répétée.')
             facts[row[0]] = row[1]
-    if (facts.get('ISIN') != isin or facts.get('Share Class Currency') != 'EUR'
+    if (facts.get('ISIN') != isin or facts.get(currency_field) != 'EUR'
             or facts.get('Use of Income') != 'Accumulating'):
         raise ValueError('Part, devise ou capitalisation incompatible.')
     growth_rows = sheets['Growth of Hypothetical 10,000']
@@ -178,12 +187,21 @@ def import_multi_asset_exports(europe_raw, bond_raw, retrieved_at, start, end):
     """Same dates required; never inner-join away observations or forward fill."""
     e = import_europe_export(europe_raw, retrieved_at, start, end)
     b = import_bond_export(bond_raw, retrieved_at, start, end)
+    return _combine_exports(e, b)
+
+
+def import_world_bond_exports(world_raw, bond_raw, retrieved_at, start, end):
+    return _combine_exports(import_world_export(world_raw, retrieved_at, start, end),
+                            import_bond_export(bond_raw, retrieved_at, start, end))
+
+
+def _combine_exports(e, b):
     if not e[2].equals(b[2]):
         raise ValueError('Calendriers actions et obligations différents ; aucun alignement automatique.')
     levels = pd.concat([e[0], b[0]], axis=1)
     metadata = {**e[1], **b[1]}
     report = validate_panel(levels, metadata, e[2])
-    report.update(sources={ISIN:e[3],BOND_ISIN:b[3]},
+    report.update(sources={next(iter(e[1])):e[3],BOND_ISIN:b[3]},
         alignment='identical_nav_dates_required', independently_verified_calendar=False,
         commercial_ready=False, method='two_issuer_exports_buy_and_hold')
     return levels, metadata, e[2], report

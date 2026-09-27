@@ -15,7 +15,7 @@ st.subheader('1. Mes valorisations enregistrées')
 st.caption('Chaque état enregistré dans « Mon portefeuille réel » conserve une valeur totale datée, liquidités comprises. Seule la composition du dernier état saisi est conservée. Aucune valeur intermédiaire n’est reconstituée.')
 if valuations:
     table = pd.DataFrame(valuations).rename(columns={'date': 'Date', 'total': 'Valeur totale déclarée (€)'})
-    st.dataframe(table, hide_index=True, use_container_width=True)
+    st.dataframe(table, hide_index=True, width="stretch")
     st.download_button('Exporter mes valorisations (CSV)', table.to_csv(index=False).encode('utf-8-sig'), 'valorisations.csv', 'text/csv')
 else:
     st.info('Enregistrez votre premier état dans « Mon portefeuille réel » pour démarrer le suivi.')

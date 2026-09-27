@@ -2,6 +2,54 @@
   "schema_version": 2,
   "instruments": [
     {
+      "isin": "IE0002XZSHO1",
+      "name": "iShares MSCI World Swap PEA UCITS ETF (WPEA)",
+      "category": "Actions — marchés développés / PEA",
+      "instrument_kind": "ETF",
+      "management_style": null,
+      "reviewed_on": "2026-09-26",
+      "source_url": "https://www.blackrock.com/fr/particuliers/products/335178/",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "2024-03-26",
+        "fee_percent": 0.2,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Synthétique par swap",
+        "benchmark": "MSCI World Index",
+        "pea": true,
+        "hedging": null
+      },
+      "market_data_status": "on_demand_research",
+      "commercial_rights": "not_assessed",
+      "review_note": "Historique court depuis 2024 avec lacunes constatées dans Fund Return Series. Source historique : export officiel suisse en anglais, distinct de la documentation commerciale française. Les positions physiques du swap ne décrivent pas l’exposition de l’indice. TER seul, pas coût total. Disponibilité chez le courtier à vérifier ; l’éligibilité du support ne rend pas le portefeuille obligataire complet éligible au PEA."
+    },
+    {
+      "isin": "IE00B441G979",
+      "name": "iShares MSCI World EUR Hedged UCITS ETF (Acc)",
+      "category": "Actions — marchés développés / couverture EUR",
+      "instrument_kind": "ETF",
+      "management_style": null,
+      "reviewed_on": "2026-09-25",
+      "source_url": "https://www.ishares.com/uk/individual/en/products/251891/ishares-msci-world-eur-hedged-ucits-etf",
+      "source_date": null,
+      "facts": {
+        "share_currency": "EUR",
+        "launch_date": "2010-09-30",
+        "fee_percent": 0.55,
+        "fee_label": "Total Expense Ratio",
+        "income": "Capitalisation",
+        "replication": "Physique optimisée",
+        "benchmark": "MSCI World 100% Hedged to EUR Index (EUR)",
+        "pea": null,
+        "hedging": "EUR"
+      },
+      "market_data_status": "on_demand_research",
+      "commercial_rights": "not_assessed",
+      "review_note": "Exposition aux marchés développés avec couverture mensuelle des devises vers EUR, distincte d’un MSCI World non couvert. Base Currency EUR et Fund Launch Date dans l’export officiel. Disponibilité courtier et éligibilité PEA non vérifiées. L’émetteur annonce le retrait d’une ligne de cotation au 15/12/2026 : place concernée à vérifier avant toute utilisation opérationnelle."
+    },
+    {
       "isin": "IE00B4L5Y983",
       "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
       "category": "Actions — marchés développés",

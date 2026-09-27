@@ -16,7 +16,7 @@ positions = st.data_editor(st.session_state.get("real_positions", empty), num_ro
     column_config={"Compte": st.column_config.SelectboxColumn(options=["PEA", "CTO"], required=True),
                    "Support / ISIN": st.column_config.TextColumn(required=True),
                    "Valeur actuelle (€)": st.column_config.NumberColumn(min_value=0.0, required=True)},
-    use_container_width=True, key=f"real_positions_editor_{st.session_state.get('positions_revision', 0)}")
+    width="stretch", key=f"real_positions_editor_{st.session_state.get('positions_revision', 0)}")
 cash = st.number_input("Liquidités totales disponibles sur ces comptes (€)", 0.0, 100_000_000.0, float(previous[1]) if previous is not None else 0.0)
 st.caption("Les liquidités sont affichées séparément des supports détenus. Saisissez des valeurs de fin de journée, après les mouvements du jour. Un nouvel enregistrement à la même date corrige la valeur totale conservée pour cette date.")
 if st.button("Afficher mon état des positions", type="primary"):
@@ -49,7 +49,7 @@ if "real_snapshot" in st.session_state:
     if total > 0:
         display = saved.groupby(["Compte", "Support / ISIN"], as_index=False)["Valeur actuelle (€)"].sum()
         display["Part du total (%)"] = display["Valeur actuelle (€)"] / total * 100
-        st.dataframe(display, hide_index=True, use_container_width=True)
+        st.dataframe(display, hide_index=True, width="stretch")
         st.write(f"Liquidités : {saved_cash:,.2f} € ({saved_cash / total:.1%} du total).")
     else:
         st.info("Votre portefeuille est vide. Vous pouvez préparer un projet depuis « Construire mon projet ».")

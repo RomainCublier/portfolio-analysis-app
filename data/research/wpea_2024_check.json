@@ -1,0 +1,25 @@
+{
+  "checked_on": "2026-09-26",
+  "purpose": "Technical research validation, not a performance claim",
+  "start": "2024-08-09",
+  "end": "2024-12-31",
+  "common_observations": 100,
+  "calendar_independently_verified": false,
+  "commercial_ready": false,
+  "raw_sha256": {
+    "IE0002XZSHO1": "c9283759ad631517c192b4d210c452473ae8fece3255560deef17dfac5f0d60c",
+    "IE00BDBRDM35": "030f8cf730d5ec6a4eb05a038947440ee794bbebc122c5fffd8ca03dbad45fb5"
+  },
+  "checks": [
+    "Exact instrument identity, EUR currency and accumulation checked",
+    "Fund Return Series used; NAV and benchmark not substituted",
+    "2024-04-02 through 2024-12-31 rejected due to missing fund return on 2024-08-08",
+    "Short complete interval explicitly selected for technical validation, not performance",
+    "Three illustrative allocations calculated with initial EUR 1000 and four EUR 100 contributions"
+  ],
+  "limitations": [
+    "Short interval is not representative of long-term performance",
+    "Issuer calendar only; missing entire source rows are not independently detectable",
+    "Source workbooks are not distributed with this audit"
+  ]
+}

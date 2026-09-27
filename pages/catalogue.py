@@ -4,7 +4,7 @@ from core.catalog import load_catalog, review_status
 
 st.title("Explorer les supports")
 st.write("Comparez ETF, fonds et actions. Le type de support ne suffit pas à déterminer son risque ni le niveau d’expérience nécessaire.")
-st.info("Catalogue de recherche non exhaustif, sans classement ni sélection personnalisée. Les historiques de marché ne sont pas encore connectés.")
+st.info("Catalogue de recherche non exhaustif, sans classement ni sélection personnalisée. Certains historiques sont récupérables à la demande depuis Mon portefeuille fictif ; les droits commerciaux restent à valider.")
 rows = load_catalog()
 kind = st.selectbox("Type de support", ["Tous", "ETF", "Fonds", "Action"])
 category = st.selectbox("Quelle exposition souhaitez-vous explorer ?", ["Toutes"] + sorted({r["category"] for r in rows}))
@@ -31,7 +31,7 @@ for row in filtered:
         for key, label in [("entry_fee_max_percent", "Frais d’entrée maximum"), ("transaction_cost_estimate_percent", "Coûts de transaction estimés du fonds")]:
             if f.get(key) is not None:
                 fields[label] = f"{f[key]:.2f} % — voir les conditions de la source"
-        st.dataframe(pd.DataFrame({"Caractéristique": fields.keys(), "Information": [v if v is not None else "Non vérifié" for v in fields.values()]}), hide_index=True, use_container_width=True)
+        st.dataframe(pd.DataFrame({"Caractéristique": fields.keys(), "Information": [v if v is not None else "Non vérifié" for v in fields.values()]}), hide_index=True, width="stretch")
         if f.get("benchmark_note"):
             st.write(f["benchmark_note"])
         if row.get("review_note"):

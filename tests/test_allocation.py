@@ -75,7 +75,8 @@ def test_invalid_covariance_and_weights_are_rejected():
 def test_allocation_ui_requires_full_weights_and_warns_on_unknown_exposures():
     app = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "pages/allocation.py")).run()
     assert not app.exception
-    assert len(app.multiselect[0].options) == 10
+    from core.catalog import load_catalog
+    assert len(app.multiselect[0].options) == len(load_catalog())
     app.multiselect[0].set_value(["FR0000121014", "FR0000284689"]).run()
     app.button[0].click().run()
     assert "100" in app.error[0].value

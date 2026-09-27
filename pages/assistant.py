@@ -1,7 +1,7 @@
 """Fact-based session overview. No generated advice or background agent."""
 from datetime import date
 import streamlit as st
-from core.dossier import export_dossier, import_dossier, restore_dossier
+from core.journey import next_step
 
 st.title('Mon assistant')
 st.write('Retrouvez votre projet, vos essais et vos positions. Faites le point à votre rythme et gardez une trace de vos décisions.')
@@ -10,9 +10,15 @@ st.caption('Cet espace utilise vos saisies enregistrées. Les cours, les actuali
 project = st.session_state.get('project')
 allocation = st.session_state.get('allocation_draft', {})
 snapshot = st.session_state.get('real_snapshot')
+step = next_step(project, allocation, snapshot)
+st.subheader(step.title)
+st.write(step.description)
+st.page_link(step.page, label=step.action)
+st.caption('Pour retrouver votre travail à la prochaine visite, conservez-le dans Mon dossier.')
+st.divider()
 left, right = st.columns(2)
 with left:
-    st.subheader('Mon projet et mes essais')
+    st.subheader('Préparer mes investissements')
     if project:
         st.write(project.goal)
         st.write(f'Horizon : {project.years} ans · Versement prévu : {project.monthly:,.0f} €/mois')
@@ -20,10 +26,11 @@ with left:
         st.info('Définissez votre objectif, votre horizon et votre capacité d’épargne pour commencer.')
     st.page_link('pages/commencer.py', label='Construire ou revoir mon projet', icon='🌱')
     st.write(f'{len(allocation)} supports dans votre allocation fictive enregistrée.' if allocation else 'Aucune allocation fictive enregistrée.')
-    st.page_link('pages/allocation.py', label='Reprendre mon allocation fictive', icon='⚖️')
-    st.page_link('pages/backtest.py', label='Explorer un historique et des versements', icon='📈')
+    st.page_link('pages/modeles.py', label='Explorer les portefeuilles fictifs', icon='⚖️')
+    if allocation:
+        st.page_link('pages/allocation.py', label='Retrouver ma répartition enregistrée')
 with right:
-    st.subheader('Mes positions déclarées')
+    st.subheader('Suivre mon portefeuille')
     if snapshot is not None:
         positions, cash, valued_at = snapshot
         total = positions['Valeur actuelle (€)'].sum() + cash
@@ -54,17 +61,5 @@ for entry in reversed(st.session_state.get('decision_journal', [])):
         st.text(entry['note'])
 
 st.subheader('Conserver et reprendre mon dossier')
-st.info('Il n’y a pas encore de compte utilisateur ni de sauvegarde automatique. Téléchargez votre dossier avant de quitter, puis importez-le à votre prochaine visite. Le fichier contient vos données personnelles en clair : conservez-le dans un endroit privé.')
-try:
-    st.download_button('Télécharger mon dossier', export_dossier(st.session_state), 'mon-dossier-investisseur.json', 'application/json')
-except ValueError as exc:
-    st.error(f'Export impossible : {exc}')
-st.caption('Inclus : projet, dernière allocation fictive enregistrée, dernier état des positions, historique des valeurs totales, apports/retraits et journal. Les historiques importés, résultats de backtest et limites de concentration ne sont pas inclus.')
-upload = st.file_uploader('Reprendre un dossier enregistré', type=['json'])
-st.caption('Le chargement remplace le projet, l’allocation, les positions, l’historique de suivi et le journal de cette session.')
-if st.button('Charger ce dossier', disabled=upload is None):
-    try:
-        restore_dossier(st.session_state, import_dossier(upload.getvalue()))
-        st.rerun()
-    except ValueError as exc:
-        st.error(str(exc))
+st.page_link('pages/dossier.py', label='Ouvrir Mon dossier')
+st.caption('Téléchargez votre dossier ou reprenez un fichier existant depuis cet espace. La sauvegarde n’est pas automatique.')

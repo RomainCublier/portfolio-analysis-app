@@ -27,6 +27,10 @@ def load_catalog(path=CATALOG):
     for row in data["instruments"]:
         if row.get("instrument_kind") not in {"ETF", "Fonds", "Action"}:
             raise ValueError("Type de support non reconnu.")
+        if row.get("commercial_rights") not in {"not_assessed", "approved", "prohibited"}:
+            raise ValueError("Statut des droits commerciaux invalide.")
+        if row.get("market_data_status") not in {"not_connected", "research_only", "on_demand_research"}:
+            raise ValueError("Statut des données de marché invalide.")
         if not valid_isin(row["isin"]) or row["isin"] in seen:
             raise ValueError("ISIN invalide ou dupliqué.")
         seen.add(row["isin"])
