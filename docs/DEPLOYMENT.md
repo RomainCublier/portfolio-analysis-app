@@ -32,6 +32,20 @@ construction exclut les secrets, dossiers locaux et bases de donnees. Le
 healthcheck verifie uniquement que le serveur repond, pas la qualite des calculs.
 Le conteneur reste a construire et tester sur une machine disposant de Docker.
 
+## Controle avant ouverture
+
+Les fichiers `config/production.env.example` et `config/secrets.toml.example`
+inventorient toutes les valeurs a fournir sans contenir de secret reel. Une fois
+les variables chargees et le fichier de secrets place sur l'hebergeur, executer :
+
+```sh
+python scripts/check_release.py
+```
+
+La commande retourne un code non nul et la liste des blocages tant que l'URL,
+l'editeur, OIDC, Stripe, les documents ou les droits de donnees sont incomplets.
+Elle ne remplace ni la validation juridique ni les essais reels des fournisseurs.
+
 ## Comptes et donnees
 
 Configurer un fournisseur OIDC et un volume prive persistant seulement si les

@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 import time
+from urllib.parse import urlparse
 
-from core.billing import BillingError, EntitlementStore, subscription_active
+from cryptography.fernet import Fernet
+
+from core.billing import BillingError, EntitlementStore, PRICE_ID, subscription_active
 from core.storage import owner_id
 
 
@@ -29,7 +33,21 @@ class BillingConfig:
         )}
         if any(not isinstance(value, str) or not value.strip() for value in values.values()):
             raise BillingError("Configuration de l’offre payante incomplète.")
-        return cls(enabled=True, **{key: value.strip() for key, value in values.items()})
+        values = {key: value.strip() for key, value in values.items()}
+        issuer = urlparse(values["issuer"])
+        if issuer.scheme != "https" or not issuer.netloc or issuer.username:
+            raise BillingError("Fournisseur d’identité invalide.")
+        if not Path(values["path"]).is_absolute():
+            raise BillingError("Le stockage des accès doit utiliser un chemin absolu.")
+        try:
+            Fernet(values["encryption_key"].encode())
+        except (ValueError, TypeError) as exc:
+            raise BillingError("Clé de chiffrement des accès invalide.") from exc
+        if not values["secret_key"].startswith(("sk_test_", "sk_live_")):
+            raise BillingError("Clé Stripe serveur invalide.")
+        if not PRICE_ID.fullmatch(values["price_id"]):
+            raise BillingError("Identifiant de prix Stripe invalide.")
+        return cls(enabled=True, **values)
 
 
 def access_status(config, identity, state, *, now=None, requester=None):

@@ -29,6 +29,22 @@ def _https(value: str) -> bool:
     return parsed.scheme == "https" and bool(parsed.netloc) and not parsed.username
 
 
+def oidc_configured(raw) -> bool:
+    """Validate the minimum Streamlit OIDC configuration without exposing secrets."""
+    if not isinstance(raw, dict):
+        return False
+    required = ("redirect_uri", "cookie_secret", "client_id", "client_secret", "server_metadata_url")
+    if any(not isinstance(raw.get(key), str) or not raw[key].strip() for key in required):
+        return False
+    redirect = raw["redirect_uri"].strip()
+    return (
+        _https(redirect)
+        and urlparse(redirect).path.endswith("/oauth2callback")
+        and _https(raw["server_metadata_url"].strip())
+        and len(raw["cookie_secret"].strip()) >= 32
+    )
+
+
 @dataclass(frozen=True)
 class ReleaseSettings:
     environment: str = "development"
@@ -59,7 +75,8 @@ class ReleaseSettings:
         return self.environment == "production"
 
 
-def readiness(settings: ReleaseSettings, catalog=None, billing_configured=False) -> list[str]:
+def readiness(settings: ReleaseSettings, catalog=None, billing_configured=False,
+              auth_configured=False) -> list[str]:
     """Return release blockers without pretending to perform legal review."""
     blockers = []
     if not _https(settings.public_url):
@@ -72,8 +89,10 @@ def readiness(settings: ReleaseSettings, catalog=None, billing_configured=False)
         blockers.append("politique de confidentialité HTTPS non configurée")
     if not _https(settings.terms_url):
         blockers.append("conditions d’utilisation HTTPS non configurées")
+    if auth_configured is not True:
+        blockers.append("authentification OIDC non configurée")
     if billing_configured is not True:
-        blockers.append("authentification et paiement récurrent non configurés")
+        blockers.append("paiement récurrent non configuré")
     if not settings.commercial_data_rights_approved:
         blockers.append("droits d’utilisation commerciale des données non validés")
     if catalog is not None and any(row.get("commercial_rights") != "approved" for row in catalog):

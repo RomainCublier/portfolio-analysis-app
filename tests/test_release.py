@@ -1,4 +1,4 @@
-from core.release import ReleaseSettings, enabled, laboratory_enabled, readiness
+from core.release import ReleaseSettings, enabled, laboratory_enabled, oidc_configured, readiness
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
@@ -14,7 +14,7 @@ def test_internal_laboratory_is_off_by_default_and_explicitly_enabled():
 def test_production_readiness_requires_real_external_configuration():
     settings = ReleaseSettings.from_environ({"APP_ENV": "production"})
     assert settings.production
-    assert len(readiness(settings)) == 7
+    assert len(readiness(settings)) == 8
 
 
 def test_release_configuration_can_be_complete_without_weakening_checks():
@@ -28,8 +28,10 @@ def test_release_configuration_can_be_complete_without_weakening_checks():
         "APP_COMMERCIAL_DATA_RIGHTS_APPROVED": "true",
     })
     approved = [{"commercial_rights": "approved"}]
-    assert readiness(settings, approved, billing_configured=True) == []
-    assert "support par support" in readiness(settings, [{"commercial_rights": "not_assessed"}], True)[-1]
+    assert readiness(settings, approved, billing_configured=True, auth_configured=True) == []
+    assert "support par support" in readiness(
+        settings, [{"commercial_rights": "not_assessed"}], True, True
+    )[-1]
 
 
 def test_non_https_or_credentialed_urls_are_rejected():
@@ -41,8 +43,30 @@ def test_non_https_or_credentialed_urls_are_rejected():
         "APP_TERMS_URL": "https://invest.example/terms",
         "APP_COMMERCIAL_DATA_RIGHTS_APPROVED": "true",
     }
-    blockers = readiness(ReleaseSettings.from_environ(base), billing_configured=True)
+    blockers = readiness(
+        ReleaseSettings.from_environ(base), billing_configured=True,
+        auth_configured=True,
+    )
     assert len(blockers) == 3
+
+
+def test_oidc_configuration_requires_https_callback_metadata_and_real_secret():
+    valid = {
+        "redirect_uri": "https://invest.example/oauth2callback",
+        "cookie_secret": "a" * 32,
+        "client_id": "client",
+        "client_secret": "secret",
+        "server_metadata_url": "https://identity.example/.well-known/openid-configuration",
+    }
+    assert oidc_configured(valid)
+    for key, value in (
+        ("redirect_uri", "http://invest.example/oauth2callback"),
+        ("redirect_uri", "https://invest.example/callback"),
+        ("cookie_secret", "too-short"),
+        ("server_metadata_url", "http://identity.example/metadata"),
+    ):
+        candidate = {**valid, key: value}
+        assert not oidc_configured(candidate)
 
 
 def test_incomplete_production_configuration_blocks_the_product(monkeypatch):

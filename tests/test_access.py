@@ -1,9 +1,10 @@
 from cryptography.fernet import Fernet
 from pathlib import Path
+import pytest
 from streamlit.testing.v1 import AppTest
 
 from core.access import BillingConfig, access_status
-from core.billing import Entitlement, EntitlementStore
+from core.billing import BillingError, Entitlement, EntitlementStore
 from core.storage import owner_id
 
 
@@ -30,6 +31,29 @@ def config(tmp_path):
 
 def test_disabled_billing_keeps_development_open():
     assert access_status(BillingConfig(), {}, {}) == (None, None, True)
+
+
+def test_billing_mapping_is_validated_before_production_can_open(tmp_path):
+    raw = {
+        "enabled": True,
+        "issuer": ISSUER,
+        "path": str(tmp_path / "app.sqlite3"),
+        "encryption_key": Fernet.generate_key().decode(),
+        "secret_key": "sk_test_example",
+        "price_id": "price_example123",
+        "offer_name": "Offre",
+        "price_label": "10 € / mois",
+    }
+    assert BillingConfig.from_mapping(raw).enabled
+    for key, value in (
+        ("issuer", "http://identity.example"),
+        ("path", "relative.sqlite3"),
+        ("encryption_key", "invalid"),
+        ("secret_key", "pk_test_example"),
+        ("price_id", "product_example"),
+    ):
+        with pytest.raises(BillingError):
+            BillingConfig.from_mapping({**raw, key: value})
 
 
 def test_login_and_entitlement_are_required(tmp_path):

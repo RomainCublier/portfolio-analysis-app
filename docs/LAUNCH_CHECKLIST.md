@@ -35,6 +35,9 @@ externe ; elle ne l’accorde pas.
 Chaque support doit aussi porter `commercial_rights: approved` dans le catalogue.
 Une URL de paiement ne suffit pas à définir l’offre, les remboursements, le droit
 de rétractation, la TVA ou les conditions contractuelles.
+Avant tout déploiement, exécuter `python scripts/check_release.py` avec les secrets
+et variables du futur environnement de production. Un seul blocage interdit
+l’ouverture.
 
 ## Données
 

@@ -5,7 +5,7 @@ from streamlit.errors import StreamlitSecretNotFoundError
 from core.access import BillingConfig
 from core.billing import BillingError
 from core.catalog import load_catalog
-from core.release import ReleaseSettings, readiness
+from core.release import ReleaseSettings, oidc_configured, readiness
 
 
 settings = ReleaseSettings.from_environ()
@@ -86,8 +86,13 @@ if not all((settings.publisher, settings.support_email, settings.privacy_url, se
 if settings.production:
     try:
         billing = BillingConfig.from_mapping(dict(st.secrets.get("billing", {})))
+        auth_ready = oidc_configured(dict(st.secrets.get("auth", {})))
     except (StreamlitSecretNotFoundError, BillingError):
         billing = BillingConfig()
-    blockers = readiness(settings, load_catalog(), billing.enabled)
+        auth_ready = False
+    blockers = readiness(
+        settings, load_catalog(), billing_configured=billing.enabled,
+        auth_configured=auth_ready,
+    )
     if blockers:
         st.error("Configuration de lancement incomplète. L’ouverture commerciale doit rester bloquée.")

@@ -8,7 +8,7 @@ from config.consumer_ui import CSS
 from core.access import BillingConfig, access_status
 from core.billing import BillingError
 from core.catalog import load_catalog
-from core.release import ReleaseSettings, laboratory_enabled, readiness
+from core.release import ReleaseSettings, laboratory_enabled, oidc_configured, readiness
 
 st.set_page_config(
     page_title="QuantDesk | Mon assistant investisseur",
@@ -22,9 +22,14 @@ st.markdown(CSS, unsafe_allow_html=True)
 settings = ReleaseSettings.from_environ()
 try:
     billing = BillingConfig.from_mapping(dict(st.secrets.get("billing", {})))
+    auth_ready = oidc_configured(dict(st.secrets.get("auth", {})))
 except (StreamlitSecretNotFoundError, BillingError):
     billing = BillingConfig()
-release_blockers = readiness(settings, load_catalog(), billing.enabled) if settings.production else []
+    auth_ready = False
+release_blockers = readiness(
+    settings, load_catalog(), billing_configured=billing.enabled,
+    auth_configured=auth_ready,
+) if settings.production else []
 
 paid_access = True
 if billing.enabled:
